@@ -1,0 +1,21 @@
+.background {
+    background-color: #fff;
+    color: #000;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    background-color: #A970FF;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
