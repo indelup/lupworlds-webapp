@@ -1,8 +1,9 @@
+import { Mode } from 'src/types';
 import classes from './ModeSelection.module.scss';
 
 type ModeSelectionProps = {
     user: any;
-    setMode: (mode: string) => void;
+    setMode: (mode: Mode) => void;
 };
 
 export const ModeSelection = ({ user, setMode }: ModeSelectionProps) => {
@@ -11,10 +12,10 @@ export const ModeSelection = ({ user, setMode }: ModeSelectionProps) => {
             <div><h1>¡Hola {user?.display_name}!</h1></div>
             <div className={classes.buttonContainer}>
                 <span className={classes.button} onClick={() => {
-                    setMode('streamer');
+                    setMode(Mode.STREAMER);
                 }}>Entrar como Streamer</span>
                 <span className={classes.button} onClick={() => {
-                    setMode('viewer');
+                    setMode(Mode.VIEWER);
                 }}>Entrar como Viewer</span>
             </div>
         </div>

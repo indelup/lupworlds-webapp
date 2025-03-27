@@ -1,11 +1,16 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ModeSelection } from "./views/mode/ModeSelection";
+import env from "./env";
+import { useStore, AppState } from "./hooks/useStore";
+import { Mode, User } from "./types";
 
 const App = () => {
-    const [user, setUser] = useState<any>(null);
-    const [mode, setMode] = useState<string | null>(null);
-    
+    const user = useStore((state: AppState) => state.user);
+    const setUser = useStore((state: AppState) => state.setUser);
+    const mode = useStore((state: AppState) => state.mode);
+    const setMode = useStore((state: AppState) => state.setMode);
+
     useEffect(() => {
         const parsedHash = new URLSearchParams(
             window.location.hash.substring(1)
@@ -15,10 +20,18 @@ const App = () => {
             axios.get('https://api.twitch.tv/helix/users', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Client-ID': '449bzopcsj2s18cvhog08eabuecscn'
+                    'Client-ID': env.VITE_TWITCH_CLIENT_ID
                 }
             }).then(response => {
-                setUser(response.data.data[0]);
+                const data = response.data.data[0];
+                const user: User = {
+                    twitchId: data.id,
+                    username: data.display_name,
+                    allowedModes: [Mode.VIEWER],
+                    twitchToken: token,
+                    twitchName: data.display_name
+                };
+                setUser(user);
             });
             window.location.hash = '';
         }
