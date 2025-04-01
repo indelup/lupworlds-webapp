@@ -1,18 +1,18 @@
-import { User, Mode, World, Character, Materials } from "src/types";
+import { User, Role, World, Character, Material } from "src/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface AppState {
     user?: User,
     setUser: (user?: User) => void,
-    mode: Mode,
-    setMode: (mode: Mode) => void,
+    role: Role,
+    setRole: (role: Role) => void,
     world: World,
     setWorld: (world: World) => void,
     characters: Character[],
     setCharacters: (characters: Character[]) => void,
-    materials: Materials[],
-    setMaterials: (materials: Materials[]) => void,
+    materials: Material[],
+    setMaterials: (materials: Material[]) => void,
 }
 
 export const useStore = create<AppState>()(
@@ -20,16 +20,18 @@ export const useStore = create<AppState>()(
         (set) => ({
             user: undefined,
             setUser: (user?: User) => set({ user }),
-            mode: Mode.VIEWER,
-            setMode: (mode: Mode) => set({ mode }),
+            role: Role.VIEWER,
+            setRole: (role: Role) => set({ role }),
             world: {
-                streamer_id: "",
+                id: "",
+                streamerIds: [],
+                maxRarity: 0,
             },
             setWorld: (world: World) => set({ world }),
             characters: [],
             setCharacters: (characters: Character[]) => set({ characters }),
             materials: [],
-            setMaterials: (materials: Materials[]) => set({ materials }),
+            setMaterials: (materials: Material[]) => set({ materials }),
         }),
         { name: "app-store" }
     )
