@@ -1,12 +1,12 @@
-import { Mode } from "src/types";
+import { ROLE } from "src/types";
 import classes from "./ModeSelection.module.scss";
 
 type ModeSelectionProps = {
     user: any;
-    setMode: (mode: Mode) => void;
+    setRole: (role: ROLE) => void;
 };
 
-export const ModeSelection = ({ user, setMode }: ModeSelectionProps) => {
+export const ModeSelection = ({ user, setRole }: ModeSelectionProps) => {
     return (
         <div className={classes.background}>
             <div>
@@ -16,7 +16,7 @@ export const ModeSelection = ({ user, setMode }: ModeSelectionProps) => {
                 <span
                     className={classes.button}
                     onClick={() => {
-                        setMode(Mode.STREAMER);
+                        setRole(ROLE.STREAMER);
                     }}
                 >
                     Entrar como Streamer
@@ -24,7 +24,7 @@ export const ModeSelection = ({ user, setMode }: ModeSelectionProps) => {
                 <span
                     className={classes.button}
                     onClick={() => {
-                        setMode(Mode.VIEWER);
+                        setRole(ROLE.VIEWER);
                     }}
                 >
                     Entrar como Viewer

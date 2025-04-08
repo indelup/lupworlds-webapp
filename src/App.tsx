@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import { ModeSelection } from "./views/mode/ModeSelection";
 import env from "./env";
 import { useStore, AppState } from "./hooks/useStore";
-import { Role, User } from "./types";
+import { ROLE, User } from "./types";
 
 const App = () => {
     const user = useStore((state: AppState) => state.user);
     const setUser = useStore((state: AppState) => state.setUser);
-    const mode = useStore((state: AppState) => state.role);
-    const setMode = useStore((state: AppState) => state.setRole);
+    const role = useStore((state: AppState) => state.role);
+    const setRole = useStore((state: AppState) => state.setRole);
 
     useEffect(() => {
         const parsedHash = new URLSearchParams(
@@ -28,7 +28,7 @@ const App = () => {
                     const data = response.data.data[0];
                     const user: User = {
                         twitchId: data.id,
-                        allowedRoles: [Role.VIEWER],
+                        allowedRoles: [ROLE.VIEWER],
                         alias: data.display_name,
                         id: data.id,
                         worldIds: [],
@@ -41,9 +41,9 @@ const App = () => {
 
     return (
         <>
-            {!mode && <ModeSelection user={user} setMode={setMode} />}
-            {mode === "streamer" && <div>Acá ira la vista de streamer</div>}
-            {mode === "viewer" && <div>Acá ira la vista de viewer</div>}
+            {!role && <ModeSelection user={user} setRole={setRole} />}
+            {role === "streamer" && <div>Acá ira la vista de streamer</div>}
+            {role === "viewer" && <div>Acá ira la vista de viewer</div>}
         </>
     );
 };
