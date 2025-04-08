@@ -36,17 +36,19 @@
         "zustand": "^5.0.3"
     },
     "devDependencies": {
+        "@eslint/js": "^9.24.0",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
-        "@typescript-eslint/eslint-plugin": "^7.13.1",
-        "@typescript-eslint/parser": "^7.13.1",
         "@vitejs/plugin-react": "^4.3.1",
-        "eslint": "^8.57.0",
-        "eslint-plugin-react-hooks": "^4.6.2",
-        "eslint-plugin-react-refresh": "^0.4.7",
+        "eslint": "^9.24.0",
+        "eslint-config-prettier": "^10.1.1",
+        "eslint-plugin-react": "^7.37.5",
+        "globals": "^16.0.0",
+        "prettier": "3.5.3",
         "sass": "^1.86.0",
         "terser": "^5.28.1",
         "typescript": "^5.2.2",
+        "typescript-eslint": "^8.29.1",
         "vite": "^6.2.3"
     }
 }

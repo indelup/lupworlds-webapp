@@ -13,35 +13,37 @@ const App = () => {
 
     useEffect(() => {
         const parsedHash = new URLSearchParams(
-            window.location.hash.substring(1)
+            window.location.hash.substring(1),
         );
-        const token = parsedHash.get('access_token');
+        const token = parsedHash.get("access_token");
         if (token) {
-            axios.get('https://api.twitch.tv/helix/users', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Client-ID': env.VITE_TWITCH_CLIENT_ID
-                }
-            }).then(response => {
-                const data = response.data.data[0];
-                const user: User = {
-                    twitchId: data.id,
-                    allowedRoles: [Role.VIEWER],
-                    alias: data.display_name,
-                    id: data.id,
-                    worlds: []
-                };
-                setUser(user);
-            });
-            window.location.hash = '';
+            axios
+                .get("https://api.twitch.tv/helix/users", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Client-ID": env.VITE_TWITCH_CLIENT_ID,
+                    },
+                })
+                .then((response) => {
+                    const data = response.data.data[0];
+                    const user: User = {
+                        twitchId: data.id,
+                        allowedRoles: [Role.VIEWER],
+                        alias: data.display_name,
+                        id: data.id,
+                        worldIds: [],
+                    };
+                    setUser(user);
+                });
+            window.location.hash = "";
         }
     }, []);
 
     return (
         <>
             {!mode && <ModeSelection user={user} setMode={setMode} />}
-            {mode === 'streamer' && <div>Acá ira la vista de streamer</div>}
-            {mode === 'viewer' && <div>Acá ira la vista de viewer</div>}
+            {mode === "streamer" && <div>Acá ira la vista de streamer</div>}
+            {mode === "viewer" && <div>Acá ira la vista de viewer</div>}
         </>
     );
 };
