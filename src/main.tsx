@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { Login } from "./views/login/Login.tsx";
+import { ModeSelection } from "./views/mode/ModeSelection.tsx";
 
 const router = createBrowserRouter([
     {
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/mode",
+        element: <ModeSelection />,
     },
 ]);
 

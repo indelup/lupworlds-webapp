@@ -11,6 +11,7 @@ export enum PITYMODE {
 
 // ACTUAL TYPES
 export interface TwitchData {
+    id: string;
     token: string;
     name: string;
 }

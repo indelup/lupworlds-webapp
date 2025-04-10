@@ -10,6 +10,11 @@ export default defineConfig([
         files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
         plugins: { js },
         extends: ["js/recommended"],
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
     },
     {
         files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],

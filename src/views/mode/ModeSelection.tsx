@@ -1,16 +1,28 @@
 import { ROLE } from "src/types";
 import classes from "./ModeSelection.module.scss";
+import { useStore, AppState } from "src/hooks/useStore";
+import { useEffect } from "react";
+import { redirect } from "react-router";
 
-type ModeSelectionProps = {
-    user: any;
-    setRole: (role: ROLE) => void;
-};
+export const ModeSelection = () => {
+    const user = useStore((state: AppState) => state.user);
+    const role = useStore((state: AppState) => state.role);
+    const setRole = useStore((state: AppState) => state.setRole);
 
-export const ModeSelection = ({ user, setRole }: ModeSelectionProps) => {
+    useEffect(() => {
+        if (role === ROLE.STREAMER) {
+            redirect("streamer");
+        }
+
+        if (role === ROLE.VIEWER) {
+            redirect("viewer");
+        }
+    }, [role]);
+
     return (
         <div className={classes.background}>
             <div>
-                <h1>¡Hola {user?.display_name}!</h1>
+                <h1>¡Hola {user?.alias}!</h1>
             </div>
             <div className={classes.buttonContainer}>
                 <span
