@@ -1,0 +1,39 @@
+.background {
+    background-color: #fff;
+    color: #000;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #1c3738;
+    color: white;
+    height: 100vh;
+}
+
+.sidebarButton {
+    margin: 20px;
+}
+
+.contentContainer {
+    flex-grow: 1;
+    height: 100vh;
+}
+
+.contentHeader {
+    padding: 20px;
+    background-color: #8baaad;
+    color: white;
+}
+
+.logo {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}

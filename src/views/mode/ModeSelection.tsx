@@ -2,20 +2,26 @@ import { ROLE } from "src/types";
 import classes from "./ModeSelection.module.scss";
 import { useStore, AppState } from "src/hooks/useStore";
 import { useEffect } from "react";
-import { redirect } from "react-router";
+import { useNavigate } from "react-router";
+import { useCheckUser } from "src/hooks/useCheckUser";
 
 export const ModeSelection = () => {
     const user = useStore((state: AppState) => state.user);
     const role = useStore((state: AppState) => state.role);
     const setRole = useStore((state: AppState) => state.setRole);
+    const navigate = useNavigate();
+
+    useCheckUser();
 
     useEffect(() => {
         if (role === ROLE.STREAMER) {
-            redirect("streamer");
+            navigate("/streamer");
         }
 
-        if (role === ROLE.VIEWER) {
-            redirect("viewer");
+        if (role === ROLE.VIEWER || user?.allowedRoles.length === 1) {
+            console.log(user);
+            setRole(ROLE.VIEWER);
+            navigate("/viewer");
         }
     }, [role]);
 
