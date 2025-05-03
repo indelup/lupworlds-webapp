@@ -1,0 +1,29 @@
+.container {
+    color: #000;
+    height: calc(100vh - 120px);
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.actions {
+    padding-bottom: 24px;   
+}
+
+.cardList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-bottom: 24px;
+}
+
+.card {
+    height: 22.4rem;
+    width: 16rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: #FAA33D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

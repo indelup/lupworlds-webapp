@@ -1,40 +1,29 @@
+.layout {
+    height: 100vh;
+}
+
 .background {
-    background-color: #fff;
-    color: #000;
     height: 100vh;
+    background-color: lightgray;
+    padding: 12px;
+}
+
+.content {
+    height: 100%;
+    padding: 24px;
+    min-height: 360px;
+    border-radius: 12px;
+    background-color: white;
+    scrollbar-width: none;
+    overflow-y: scroll;
+}
+
+.logoContainer {
+    height: 64px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sidebar {
-    width: 200px;
-    background-color: #1c3738;
-    color: white;
-    height: 100vh;
-}
-
-.sidebarButton {
-    margin: 20px;
-    cursor: pointer;
-}
-
-.contentContainer {
-    flex-grow: 1;
-    height: 100vh;
-}
-
-.contentHeader {
-    padding: 20px;
-    background-color: #8baaad;
-    color: white;
+    justify-content: center;
 }
 
 .logo {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
+    height: 100%;
 }
