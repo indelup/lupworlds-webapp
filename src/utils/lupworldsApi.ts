@@ -1,4 +1,4 @@
-import { ROLE } from "src/types";
+import { ROLE } from "../types";
 
 export const fetchUser = (twitchId: string) => {
     // Dummy data because we have no API

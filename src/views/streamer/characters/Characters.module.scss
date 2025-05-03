@@ -7,6 +7,7 @@
 }
 
 .actions {
+    display: flex;
     padding-bottom: 24px;   
 }
 
@@ -15,6 +16,7 @@
     flex-wrap: wrap;
     gap: 24px;
     padding-bottom: 24px;
+    justify-content:start;
 }
 
 .card {

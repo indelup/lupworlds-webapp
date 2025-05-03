@@ -1,5 +1,5 @@
 import classes from "./Login.module.scss";
-import env from "src/env";
+import env from "../../env";
 
 export const Login = () => {
     const scope = "user:read:email";

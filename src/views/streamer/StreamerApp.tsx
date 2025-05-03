@@ -1,14 +1,14 @@
-import { useStore, AppState } from "src/hooks/useStore";
-import { useCheckUser } from "src/hooks/useCheckUser";
+import { useStore, AppState } from "../../hooks/useStore";
+import { useCheckUser } from "../../hooks/useCheckUser";
 import { useState } from "react";
-import { Characters } from "./Characters";
-import { Materials } from "./Materials";
-import { Banners } from "./Banners";
-import { Stores } from "./Stores";
+import { Characters } from "./characters/Characters";
+import { Materials } from "./materials/Materials";
+import { Banners } from "./banners/Banners";
+import { Stores } from "./stores/Stores";
 import classes from "./StreamerApp.module.scss";
 
 import type { MenuProps } from "antd";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Typography } from "antd";
 import {
     RadarChartOutlined,
     GoldOutlined,
@@ -16,6 +16,7 @@ import {
     ShoppingCartOutlined,
     TwitchOutlined,
     SettingOutlined,
+    StarOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Sider } = Layout;
@@ -41,6 +42,7 @@ const items: MenuItem[] = [
     getItem("Materials", "materials", <GoldOutlined />),
     getItem("Banners", "banners", <FireOutlined />),
     getItem("Stores", "stores", <ShoppingCartOutlined />),
+    getItem("World Config", "world", <StarOutlined />),
     getItem("Twitch Config", "twitch", <TwitchOutlined />),
     getItem("Settings", "settings", <SettingOutlined />),
 ];
@@ -75,7 +77,14 @@ export const StreamerApp = () => {
                 />
             </Sider>
             <Layout>
-                <Header />
+                <Header className={classes.header}>
+                    <Typography.Title className={classes.title} level={3}>
+                        {view.toUpperCase()}
+                    </Typography.Title>
+                    <Typography.Text className={classes.userText}>
+                        {user?.alias}
+                    </Typography.Text>
+                </Header>
                 <Content className={classes.background}>
                     <div className={classes.content}>
                         <ActiveView />

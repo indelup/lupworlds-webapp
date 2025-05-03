@@ -1,6 +1,6 @@
-import { useStore, AppState } from "src/hooks/useStore";
+import { useStore, AppState } from "../../hooks/useStore";
 import classes from "./ViewerApp.module.scss";
-import { useCheckUser } from "src/hooks/useCheckUser";
+import { useCheckUser } from "../../hooks/useCheckUser";
 
 export const ViewerApp = () => {
     const user = useStore((state: AppState) => state.user);

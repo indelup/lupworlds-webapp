@@ -6,6 +6,7 @@ import { Login } from "./views/login/Login.tsx";
 import { ModeSelection } from "./views/mode/ModeSelection.tsx";
 import { ViewerApp } from "./views/viewer/ViewerApp.tsx";
 import { StreamerApp } from "./views/streamer/StreamerApp.tsx";
+import { ConfigProvider } from "antd";
 
 const router = createBrowserRouter([
     {
@@ -31,7 +32,15 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-        <RouterProvider router={router} />
-    </React.StrictMode>,
+    <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: '"Source Sans 3"',
+            },
+        }}
+    >
+        <React.StrictMode>
+            <RouterProvider router={router} />
+        </React.StrictMode>
+    </ConfigProvider>,
 );

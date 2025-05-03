@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useStore, AppState } from "src/hooks/useStore";
+import { useStore, AppState } from "./hooks/useStore";
 import { useNavigate } from "react-router";
 import { fetchTwitchData, fetchUser } from "./utils";
 

@@ -1,6 +1,6 @@
 import axios from "axios";
-import env from "src/env";
-import { TwitchData } from "src/types";
+import env from "../env";
+import { TwitchData } from "../types";
 
 export const fetchTwitchData = async (token: string): Promise<TwitchData> => {
     const response = await axios.get("https://api.twitch.tv/helix/users", {

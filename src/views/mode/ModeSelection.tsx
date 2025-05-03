@@ -1,9 +1,9 @@
-import { ROLE } from "src/types";
+import { ROLE } from "../../types";
 import classes from "./ModeSelection.module.scss";
-import { useStore, AppState } from "src/hooks/useStore";
+import { useStore, AppState } from "../../hooks/useStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useCheckUser } from "src/hooks/useCheckUser";
+import { useCheckUser } from "../../hooks/useCheckUser";
 
 export const ModeSelection = () => {
     const user = useStore((state: AppState) => state.user);

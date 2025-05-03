@@ -8,6 +8,25 @@
     padding: 12px;
 }
 
+.header {
+    padding-left: 24px;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.title {
+    color: white !important;
+    margin: 0 !important;
+    font-family: 'PJ-Masks-Regular';
+    font-weight: 200 !important;
+    letter-spacing: 0.1rem;
+}
+
+.userText {
+    color: white !important;
+}
+
 .content {
     height: 100%;
     padding: 24px;
