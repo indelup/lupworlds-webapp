@@ -1,23 +1,17 @@
-import { Character } from "src/types";
+import { Character } from "../../../types";
 import classes from "./Characters.module.scss";
-import Tilt from "react-parallax-tilt";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { CharacterForm } from "./CharacterForm";
+import { CharacterCard } from "../../common/CharacterCard";
 
 export const Characters = () => {
     // TODO - This should fetch characters from the API
     const [formOpen, setFormOpen] = useState(false);
     const characters: Character[] = getCharacters();
 
-    return formOpen ? (
-        <CharacterForm
-            onClose={() => {
-                setFormOpen(false);
-            }}
-        />
-    ) : (
+    return (
         <>
             <div className={classes.actions}>
                 <Button
@@ -34,20 +28,22 @@ export const Characters = () => {
             <div className={classes.cardList}>
                 {characters.map((character) => {
                     return (
-                        <Tilt
-                            className={classes.card}
-                            tiltReverse
-                            glareEnable
-                            glareColor="white"
-                            glarePosition="all"
-                            glareBorderRadius="0.5rem"
-                            glareMaxOpacity={0.2}
-                        >
-                            <div>{character.name}</div>
-                        </Tilt>
+                        <CharacterCard
+                            character={character}
+                            key={character.name}
+                        />
                     );
                 })}
             </div>
+            <Modal
+                open={formOpen}
+                title="New Character"
+                centered
+                width={700}
+                onCancel={() => setFormOpen(false)}
+            >
+                <CharacterForm />
+            </Modal>
         </>
     );
 };
@@ -93,7 +89,7 @@ const getCharacters = (): Character[] => {
         {
             id: "testCharacter",
             worldId: "Indelup",
-            name: "Otro",
+            name: "Otro 2",
             description: "A",
             frontImage: "path1",
             backImage: "path2",
