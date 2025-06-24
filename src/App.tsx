@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useStore, AppState } from "./hooks/useStore";
 import { useNavigate } from "react-router";
-import { fetchTwitchData, fetchUser } from "./utils";
+import { fetchTwitchData, getOrCreateUser } from "./utils";
 
 const App = () => {
     const twitchData = useStore((state: AppState) => state.twitchData);
@@ -30,8 +30,9 @@ const App = () => {
 
     useEffect(() => {
         if (twitchData && !user) {
-            const user = fetchUser(twitchData.id);
-            setUser(user);
+            getOrCreateUser(twitchData).then((user) => {
+                setUser(user);
+            });
         }
     }, [twitchData]);
 

@@ -1,4 +1,4 @@
-import { User, ROLE, World, Character, Material, TwitchData } from "src/types";
+import { User, ROLE, World, Character, Material, TwitchData } from "../types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
