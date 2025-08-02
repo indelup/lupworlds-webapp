@@ -1,10 +1,79 @@
 .card {
+    position: relative;
     height: 22.4rem;
     width: 16rem;
     border-radius: 0.5rem;
-    padding: 0.5rem;
-    background-color: #FAA33D;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
+    transform-style: preserve-3d;
+}
+
+.background {
+    height: 101%;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 0.5rem;
+}
+
+.main {
+    position: absolute;
+    height: 100%;
+}
+
+// .main:hover {
+//     transform: translateZ(40px);
+// }
+
+.infoContainer {
+    position: absolute;
+    border-radius: 0.5rem;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.info {
+    height: 25%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.infoBackground {
+    position: absolute;
+    border-radius: 0.5rem;
+    height: 25%;
+    width: 100%;
+    background-color: black;
+    opacity: 50%;
+}
+
+.mainText {
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.artistText {
+    width: 100%;
+    padding-right: 12px;
+    text-align: right;
+    color: white;
+    margin-top: 0;
+    font-size: 10px;
+    font-weight: 500;
+    font-style: italic;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.star {
+    scale: 0.6
 }

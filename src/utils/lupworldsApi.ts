@@ -1,6 +1,7 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User } from "../types";
+import { ROLE, TwitchData, User, Character } from "../types";
+import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (
     twitchData: TwitchData,
@@ -23,4 +24,52 @@ export const getOrCreateUser = async (
     } else {
         return response.data;
     }
+};
+
+export const getPresignedUrl = async (
+    fileName: string,
+    contentType: string,
+): Promise<{ url: string; key: string }> => {
+    const response = await axios.post(
+        `${env.VITE_LUPWORLDS_API_URI}/characters/get-presigned-url`,
+        {
+            fileName,
+            contentType,
+        },
+    );
+    return response.data;
+};
+
+export const uploadImage = async (image: UploadFile) => {
+    const { url, key } = await getPresignedUrl(
+        image.name || "character.jpg",
+        image.type || "image/jpeg",
+    );
+
+    await fetch(url, {
+        method: "PUT",
+        body: image as unknown as BodyInit,
+        headers: {
+            "Content-Type": image.type || "image/jpeg",
+        },
+    });
+
+    return key;
+};
+
+export const getCharacters = async (worldId: string): Promise<Character[]> => {
+    const response = await axios.get(
+        `${env.VITE_LUPWORLDS_API_URI}/characters?worldId=${worldId}`,
+    );
+    return response.data;
+};
+
+export const createCharacter = async (
+    character: Omit<Character, "id">,
+): Promise<Character> => {
+    const response = await axios.post(
+        `${env.VITE_LUPWORLDS_API_URI}/characters`,
+        character,
+    );
+    return response.data;
 };

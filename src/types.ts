@@ -45,8 +45,9 @@ export interface Character {
     worldId: string;
     name: string;
     description: string;
-    frontImage: string;
-    backImage: string;
+    artist: string;
+    characterSrc: string;
+    backgroundSrc: string;
     rarity: number;
 }
 
