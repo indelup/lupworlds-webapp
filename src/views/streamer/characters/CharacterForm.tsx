@@ -46,11 +46,10 @@ export const CharacterForm = (props: CharacterFormProps) => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
     const [saving, setSaving] = useState(false);
-
     const [character, setCharacter] = useState<Character>(initialCharacter);
-
     const [characterImage, setCharacterImage] = useState<UploadFile>();
     const [backgroundImage, setBackgroundImage] = useState<UploadFile>();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Transform received file to base64 so it can be shown in Preview
     const setFile = async (
@@ -83,21 +82,46 @@ export const CharacterForm = (props: CharacterFormProps) => {
         });
     };
 
+    const validate = () => {
+        const errors: Record<string, string> = {};
+        if (!characterImage) {
+            errors["characterImage"] = "Campo requerido";
+        }
+        if (!backgroundImage) {
+            errors["backgroundImage"] = "Campo requerido";
+        }
+        if (!character.name) {
+            errors["name"] = "Campo requerido";
+        }
+        if (!character.description) {
+            errors["description"] = "Campo requerido";
+        }
+        if (!character.artist) {
+            errors["artist"] = "Campo requerido";
+        }
+
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const onSave = async () => {
         try {
-            const finalCharacter = { ...character, worldId: activeWorldId };
-            await saveCharacter(
-                finalCharacter,
-                characterImage,
-                backgroundImage,
-            );
+            if (validate()) {
+                setSaving(true);
+                const finalCharacter = { ...character, worldId: activeWorldId };
+                await saveCharacter(
+                    finalCharacter,
+                    characterImage,
+                    backgroundImage,
+                );
 
-            // Reset form state and close modal
-            setCharacter(initialCharacter);
-            setCharacterImage(undefined);
-            setBackgroundImage(undefined);
-            props.setOpen(false);
-            props.onCharacterCreated?.();
+                // Reset form state and close modal
+                setCharacter(initialCharacter);
+                setCharacterImage(undefined);
+                setBackgroundImage(undefined);
+                props.setOpen(false);
+                props.onCharacterCreated?.();
+            }
         } catch (error) {
             console.error("Error saving character:", error);
         } finally {
@@ -137,6 +161,9 @@ export const CharacterForm = (props: CharacterFormProps) => {
                     >
                         <Input
                             placeholder="Name"
+                            status={
+                                !character.name && errors.name ? "error" : ""
+                            }
                             onChange={(e) => {
                                 const name = e.target.value;
                                 setCharacter({ ...character, name });
@@ -144,6 +171,11 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         />
                         <Input.TextArea
                             placeholder="Description"
+                            status={
+                                !character.description && errors.description
+                                    ? "error"
+                                    : ""
+                            }
                             onChange={(e) => {
                                 const description = e.target.value;
                                 setCharacter({
@@ -154,6 +186,11 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         />
                         <Input
                             placeholder="Artista"
+                            status={
+                                !character.artist && errors.artist
+                                    ? "error"
+                                    : ""
+                            }
                             onChange={(e) => {
                                 const artist = e.target.value;
                                 setCharacter({ ...character, artist });
@@ -170,7 +207,15 @@ export const CharacterForm = (props: CharacterFormProps) => {
                             fileList={characterImage ? [characterImage] : []}
                             maxCount={1}
                         >
-                            <Button icon={<UploadOutlined />}>
+                            <Button
+                                icon={<UploadOutlined />}
+                                color={
+                                    !characterImage && errors.characterImage
+                                        ? "danger"
+                                        : "default"
+                                }
+                                variant="outlined"
+                            >
                                 Imagen Personaje
                             </Button>
                         </Upload>
@@ -187,7 +232,15 @@ export const CharacterForm = (props: CharacterFormProps) => {
                             fileList={backgroundImage ? [backgroundImage] : []}
                             maxCount={1}
                         >
-                            <Button icon={<UploadOutlined />}>
+                            <Button
+                                icon={<UploadOutlined />}
+                                color={
+                                    !backgroundImage && errors.backgroundImage
+                                        ? "danger"
+                                        : "default"
+                                }
+                                variant="outlined"
+                            >
                                 Imagen Fondo
                             </Button>
                         </Upload>
