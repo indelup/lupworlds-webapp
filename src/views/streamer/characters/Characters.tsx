@@ -1,7 +1,12 @@
 import { Character } from "../../../types";
 import classes from "./Characters.module.scss";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Flex } from "antd";
+import {
+    DeleteFilled,
+    EditFilled,
+    EditOutlined,
+    PlusOutlined,
+} from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { CharacterForm } from "./CharacterForm";
 import { CharacterCard } from "../../common/CharacterCard";
@@ -60,10 +65,25 @@ export const Characters = () => {
                 ) : (
                     characters.map((character) => {
                         return (
-                            <CharacterCard
-                                character={character}
-                                key={character.id}
-                            />
+                            <Flex gap={8} vertical>
+                                <CharacterCard
+                                    character={character}
+                                    key={character.id}
+                                />
+                                <Flex gap={4} justify="end" className="mt-4">
+                                    <Button
+                                        type="primary"
+                                        shape="circle"
+                                        icon={<EditFilled />}
+                                    />
+                                    <Button
+                                        type="primary"
+                                        shape="circle"
+                                        icon={<DeleteFilled />}
+                                        danger
+                                    />
+                                </Flex>
+                            </Flex>
                         );
                     })
                 )}

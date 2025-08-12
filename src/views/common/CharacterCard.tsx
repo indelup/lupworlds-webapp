@@ -28,7 +28,7 @@ export const CharacterCard = (props: CharacterCardProps) => {
             glareColor="white"
             glarePosition="all"
             glareBorderRadius="0.5rem"
-            glareMaxOpacity={0.1}
+            glareMaxOpacity={0.15}
         >
             <img src={characterSrc} className={classes.main} />
             <img src={backgroundSrc} className={classes.background} />
