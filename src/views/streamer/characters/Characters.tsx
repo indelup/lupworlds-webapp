@@ -1,14 +1,10 @@
 import { Character } from "../../../types";
 import classes from "./Characters.module.scss";
 import { Button, Flex } from "antd";
-import {
-    DeleteFilled,
-    EditFilled,
-    EditOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
+import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { CharacterForm } from "./CharacterForm";
+import { CharacterDelete } from "./CharacterDelete";
 import { CharacterCard } from "../../common/CharacterCard";
 import { getCharacters } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
@@ -17,6 +13,8 @@ export const Characters = () => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
     const [formOpen, setFormOpen] = useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [characterId, setCharacterId] = useState("");
     const [characters, setCharacters] = useState<Character[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -81,6 +79,10 @@ export const Characters = () => {
                                         shape="circle"
                                         icon={<DeleteFilled />}
                                         danger
+                                        onClick={() => {
+                                            setDeleteOpen(true);
+                                            setCharacterId(character.id);
+                                        }}
                                     />
                                 </Flex>
                             </Flex>
@@ -99,6 +101,30 @@ export const Characters = () => {
                                 const fetchedCharacters =
                                     await getCharacters(activeWorldId);
                                 setCharacters(fetchedCharacters);
+                            } catch (error) {
+                                console.error(
+                                    "Error refreshing characters:",
+                                    error,
+                                );
+                            }
+                        }
+                    };
+                    fetchCharacters();
+                }}
+            />
+            <CharacterDelete
+                open={deleteOpen}
+                setOpen={setDeleteOpen}
+                characterId={characterId}
+                onCharacterDeleted={() => {
+                    // Refresh characters list when a character is deleted
+                    const fetchCharacters = async () => {
+                        if (activeWorldId) {
+                            try {
+                                const fetchedCharacters =
+                                    await getCharacters(activeWorldId);
+                                setCharacters(fetchedCharacters);
+                                setCharacterId("");
                             } catch (error) {
                                 console.error(
                                     "Error refreshing characters:",

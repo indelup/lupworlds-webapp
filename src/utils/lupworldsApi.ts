@@ -57,6 +57,7 @@ export const uploadImage = async (image: UploadFile) => {
     return key;
 };
 
+// CHARACTERS
 export const getCharacters = async (worldId: string): Promise<Character[]> => {
     const response = await axios.get(
         `${env.VITE_LUPWORLDS_API_URI}/characters?worldId=${worldId}`,
@@ -70,6 +71,13 @@ export const createCharacter = async (
     const response = await axios.post(
         `${env.VITE_LUPWORLDS_API_URI}/characters`,
         character,
+    );
+    return response.data;
+};
+
+export const deleteCharacter = async (characterId: string): Promise<void> => {
+    const response = await axios.delete(
+        `${env.VITE_LUPWORLDS_API_URI}/characters/${characterId}`,
     );
     return response.data;
 };
