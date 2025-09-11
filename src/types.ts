@@ -30,6 +30,22 @@ export interface User {
     worldIds: string[];
 }
 
+export interface PlayerData {
+    // User ID
+    userId: string;
+    worldsData: Record<string, PlayerWorldData>;
+}
+
+export interface PlayerWorldData {
+    characters: GachaItem[];
+    materials: GachaItem[];
+}
+
+export interface GachaItem {
+    itemId: string;
+    quantity: number;
+}
+
 export interface World {
     // Database ID
     id: string;
@@ -64,7 +80,7 @@ export interface Material {
 export interface Banner {
     id: string;
     worldId: string;
-    image: string;
+    imageSrc: string;
 }
 
 export interface BannerBag {
