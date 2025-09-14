@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User, Character } from "../types";
+import { ROLE, TwitchData, User, Character, Material } from "../types";
 import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (
@@ -29,9 +29,10 @@ export const getOrCreateUser = async (
 export const getPresignedUrl = async (
     fileName: string,
     contentType: string,
+    bucketType: string,
 ): Promise<{ url: string; key: string }> => {
     const response = await axios.post(
-        `${env.VITE_LUPWORLDS_API_URI}/characters/get-presigned-url`,
+        `${env.VITE_LUPWORLDS_API_URI}/${bucketType}/get-presigned-url`,
         {
             fileName,
             contentType,
@@ -40,10 +41,11 @@ export const getPresignedUrl = async (
     return response.data;
 };
 
-export const uploadImage = async (image: UploadFile) => {
+export const uploadImage = async (image: UploadFile, bucketType: string) => {
     const { url, key } = await getPresignedUrl(
         image.name || "character.jpg",
         image.type || "image/jpeg",
+        bucketType,
     );
 
     await fetch(url, {
@@ -78,6 +80,31 @@ export const createCharacter = async (
 export const deleteCharacter = async (characterId: string): Promise<void> => {
     const response = await axios.delete(
         `${env.VITE_LUPWORLDS_API_URI}/characters/${characterId}`,
+    );
+    return response.data;
+};
+
+// MATERIALS
+export const getMaterials = async (worldId: string): Promise<Material[]> => {
+    const response = await axios.get(
+        `${env.VITE_LUPWORLDS_API_URI}/materials?worldId=${worldId}`,
+    );
+    return response.data;
+};
+
+export const createMaterial = async (
+    material: Omit<Material, "id">,
+): Promise<Material> => {
+    const response = await axios.post(
+        `${env.VITE_LUPWORLDS_API_URI}/materials`,
+        material,
+    );
+    return response.data;
+};
+
+export const deleteMaterial = async (materialId: string): Promise<void> => {
+    const response = await axios.delete(
+        `${env.VITE_LUPWORLDS_API_URI}/materials/${materialId}`,
     );
     return response.data;
 };

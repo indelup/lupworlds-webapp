@@ -9,18 +9,18 @@ import {
     Spin,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { CharacterCard } from "../../common/CharacterCard";
-import { Character } from "../../../types";
+import { MaterialCard } from "../../common/MaterialCard";
+import { Material } from "../../../types";
 import { useState } from "react";
-import classes from "./CharacterForm.module.scss";
+import classes from "./MaterialForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
-import { createCharacter, uploadImage } from "../../../utils/lupworldsApi";
+import { createMaterial, uploadImage } from "../../../utils/lupworldsApi";
 
-type CharacterFormProps = {
+type MaterialFormProps = {
     open: boolean;
     setOpen: (open: boolean) => void;
-    onCharacterCreated?: () => void;
+    onMaterialCreated?: () => void;
 };
 
 const getBase64 = (file: any): Promise<string> =>
@@ -31,23 +31,23 @@ const getBase64 = (file: any): Promise<string> =>
         reader.onerror = (error) => reject(error);
     });
 
-const initialCharacter = {
+const initialMaterial = {
     id: "temp",
     worldId: "",
     name: "",
     description: "",
     artist: "",
-    characterSrc: "",
+    materialSrc: "",
     backgroundSrc: "",
     rarity: 1,
 };
 
-export const CharacterForm = (props: CharacterFormProps) => {
+export const MaterialForm = (props: MaterialFormProps) => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
     const [saving, setSaving] = useState(false);
-    const [character, setCharacter] = useState<Character>(initialCharacter);
-    const [characterImage, setCharacterImage] = useState<UploadFile>();
+    const [material, setMaterial] = useState<Material>(initialMaterial);
+    const [materialImage, setMaterialImage] = useState<UploadFile>();
     const [backgroundImage, setBackgroundImage] = useState<UploadFile>();
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -65,38 +65,38 @@ export const CharacterForm = (props: CharacterFormProps) => {
     };
 
     // Sets the main image preview
-    const setCharacterFile = (file: UploadFile) => {
+    const setMaterialFile = (file: UploadFile) => {
         const previewSrc = file.url || (file.preview as string);
-        setCharacterImage(file);
-        setCharacter({
-            ...character,
-            characterSrc: previewSrc,
+        setMaterialImage(file);
+        setMaterial({
+            ...material,
+            materialSrc: previewSrc,
         });
     };
     const setBackgroundFile = (file: UploadFile) => {
         const previewSrc = file.url || (file.preview as string);
         setBackgroundImage(file);
-        setCharacter({
-            ...character,
+        setMaterial({
+            ...material,
             backgroundSrc: previewSrc,
         });
     };
 
     const validate = () => {
         const errors: Record<string, string> = {};
-        if (!characterImage) {
-            errors["characterImage"] = "Campo requerido";
+        if (!materialImage) {
+            errors["materialImage"] = "Campo requerido";
         }
         if (!backgroundImage) {
             errors["backgroundImage"] = "Campo requerido";
         }
-        if (!character.name) {
+        if (!material.name) {
             errors["name"] = "Campo requerido";
         }
-        if (!character.description) {
+        if (!material.description) {
             errors["description"] = "Campo requerido";
         }
-        if (!character.artist) {
+        if (!material.artist) {
             errors["artist"] = "Campo requerido";
         }
 
@@ -108,22 +108,22 @@ export const CharacterForm = (props: CharacterFormProps) => {
         try {
             if (validate()) {
                 setSaving(true);
-                const finalCharacter = { ...character, worldId: activeWorldId };
-                await saveCharacter(
-                    finalCharacter,
-                    characterImage,
+                const finalMaterial = { ...material, worldId: activeWorldId };
+                await saveMaterial(
+                    finalMaterial,
+                    materialImage,
                     backgroundImage,
                 );
 
                 // Reset form state and close modal
-                setCharacter(initialCharacter);
-                setCharacterImage(undefined);
+                setMaterial(initialMaterial);
+                setMaterialImage(undefined);
                 setBackgroundImage(undefined);
                 props.setOpen(false);
-                props.onCharacterCreated?.();
+                props.onMaterialCreated?.();
             }
         } catch (error) {
-            console.error("Error saving character:", error);
+            console.error("Error saving material:", error);
         } finally {
             setSaving(false);
         }
@@ -132,7 +132,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
     return (
         <Modal
             open={props.open}
-            title="Nuevo Personaje"
+            title="Nuevo Material"
             centered
             width={700}
             cancelText={"Cancelar"}
@@ -151,7 +151,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         align="center"
                         justify="center"
                     >
-                        <CharacterCard character={character} isPreview />
+                        <MaterialCard material={material} isPreview />
                     </Flex>
                     <Flex
                         className={classes.formColumn}
@@ -162,24 +162,24 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         <Input
                             placeholder="Name"
                             status={
-                                !character.name && errors.name ? "error" : ""
+                                !material.name && errors.name ? "error" : ""
                             }
                             onChange={(e) => {
                                 const name = e.target.value;
-                                setCharacter({ ...character, name });
+                                setMaterial({ ...material, name });
                             }}
                         />
                         <Input.TextArea
                             placeholder="Description"
                             status={
-                                !character.description && errors.description
+                                !material.description && errors.description
                                     ? "error"
                                     : ""
                             }
                             onChange={(e) => {
                                 const description = e.target.value;
-                                setCharacter({
-                                    ...character,
+                                setMaterial({
+                                    ...material,
                                     description: description,
                                 });
                             }}
@@ -187,36 +187,34 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         <Input
                             placeholder="Artista"
                             status={
-                                !character.artist && errors.artist
-                                    ? "error"
-                                    : ""
+                                !material.artist && errors.artist ? "error" : ""
                             }
                             onChange={(e) => {
                                 const artist = e.target.value;
-                                setCharacter({ ...character, artist });
+                                setMaterial({ ...material, artist });
                             }}
                         />
                         <Upload
                             onRemove={() => {
-                                setCharacterImage(undefined);
+                                setMaterialImage(undefined);
                             }}
-                            onChange={(info) => setFile(info, setCharacterFile)}
+                            onChange={(info) => setFile(info, setMaterialFile)}
                             beforeUpload={() => {
                                 return false;
                             }}
-                            fileList={characterImage ? [characterImage] : []}
+                            fileList={materialImage ? [materialImage] : []}
                             maxCount={1}
                         >
                             <Button
                                 icon={<UploadOutlined />}
                                 color={
-                                    !characterImage && errors.characterImage
+                                    !materialImage && errors.materialImage
                                         ? "danger"
                                         : "default"
                                 }
                                 variant="outlined"
                             >
-                                Imagen Personaje
+                                Imagen Material
                             </Button>
                         </Upload>
                         <Upload
@@ -246,7 +244,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         </Upload>
                         <Rate
                             onChange={(v) => {
-                                setCharacter({ ...character, rarity: v });
+                                setMaterial({ ...material, rarity: v });
                             }}
                         />
                     </Flex>
@@ -254,34 +252,34 @@ export const CharacterForm = (props: CharacterFormProps) => {
             </div>
             {saving && (
                 <div className={classes.spinner}>
-                    <Spin tip="Creando Personaje" size="large" />
+                    <Spin tip="Creando Material" size="large" />
                 </div>
             )}
         </Modal>
     );
 };
 
-const saveCharacter = async (
-    character: Character,
-    characterImage?: UploadFile,
+const saveMaterial = async (
+    material: Material,
+    materialImage?: UploadFile,
     backgroundImage?: UploadFile,
 ) => {
-    let characterSrc = character.characterSrc;
-    let backgroundSrc = character.backgroundSrc;
+    let materialSrc = material.materialSrc;
+    let backgroundSrc = material.backgroundSrc;
 
-    // Upload character image if provided
-    if (characterImage) {
-        characterSrc = await uploadImage(characterImage, "characters");
+    // Upload material image if provided
+    if (materialImage) {
+        materialSrc = await uploadImage(materialImage, "materials");
     }
     // Upload background image if provided
     if (backgroundImage) {
-        backgroundSrc = await uploadImage(backgroundImage, "characters"); // Use the S3 key as the source
+        backgroundSrc = await uploadImage(backgroundImage, "materials"); // Use the S3 key as the source
     }
 
-    // Create the character with the uploaded image URLs
-    await createCharacter({
-        ...character,
-        characterSrc,
+    // Create the material with the uploaded image URLs
+    await createMaterial({
+        ...material,
+        materialSrc,
         backgroundSrc,
     });
 };

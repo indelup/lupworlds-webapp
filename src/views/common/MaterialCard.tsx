@@ -1,24 +1,24 @@
 import classes from "./Card.module.scss";
 import Tilt from "react-parallax-tilt";
-import { Character } from "../../types";
+import { Material } from "../../types";
 import { Rate } from "antd";
 import env from "../../env";
 
-type CharacterCardProps = {
-    character: Character;
+type MaterialCardProps = {
+    material: Material;
     isPreview?: boolean;
     mainSrc?: string;
     bgSrc?: string;
 };
 
-export const CharacterCard = (props: CharacterCardProps) => {
-    const { character } = props;
-    const characterSrc = props.isPreview
-        ? character.characterSrc
-        : `${env.VITE_CHARACTER_BUCKET_URI}/${character.characterSrc}`;
+export const MaterialCard = (props: MaterialCardProps) => {
+    const { material } = props;
+    const materialSrc = props.isPreview
+        ? material.materialSrc
+        : `${env.VITE_MATERIAL_BUCKET_URI}/${material.materialSrc}`;
     const backgroundSrc = props.isPreview
-        ? character.backgroundSrc
-        : `${env.VITE_CHARACTER_BUCKET_URI}/${character.backgroundSrc}`;
+        ? material.backgroundSrc
+        : `${env.VITE_MATERIAL_BUCKET_URI}/${material.backgroundSrc}`;
 
     return (
         <Tilt
@@ -30,27 +30,27 @@ export const CharacterCard = (props: CharacterCardProps) => {
             glareBorderRadius="0.5rem"
             glareMaxOpacity={0.15}
         >
-            <img src={characterSrc} className={classes.main} />
+            <img src={materialSrc} className={classes.main} />
             <img src={backgroundSrc} className={classes.background} />
             <div className={classes.infoBackground}></div>
             <div className={classes.infoContainer}>
-                {character.artist ? (
+                {material.artist ? (
                     <div className={classes.artistText}>
-                        Art: {character.artist}
+                        Art: {material.artist}
                     </div>
                 ) : (
                     <div></div>
                 )}
 
                 <div className={classes.info}>
-                    <div className={classes.mainText}>{character.name}</div>
+                    <div className={classes.mainText}>{material.name}</div>
                     <Rate
                         className={classes.star}
-                        value={character.rarity}
-                        count={character.rarity}
+                        value={material.rarity}
+                        count={material.rarity}
                         disabled
                     />
-                    <div>{character.description}</div>
+                    <div>{material.description}</div>
                 </div>
             </div>
         </Tilt>

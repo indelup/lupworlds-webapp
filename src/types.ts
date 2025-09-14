@@ -30,22 +30,6 @@ export interface User {
     worldIds: string[];
 }
 
-export interface PlayerData {
-    // User ID
-    userId: string;
-    worldsData: Record<string, PlayerWorldData>;
-}
-
-export interface PlayerWorldData {
-    characters: GachaItem[];
-    materials: GachaItem[];
-}
-
-export interface GachaItem {
-    itemId: string;
-    quantity: number;
-}
-
 export interface World {
     // Database ID
     id: string;
@@ -72,8 +56,9 @@ export interface Material {
     worldId: string;
     name: string;
     description: string;
-    frontImage: string;
-    backImage: string;
+    artist: string;
+    materialSrc: string;
+    backgroundSrc: string;
     rarity: number;
 }
 
@@ -130,4 +115,20 @@ export interface Currency {
     id: string;
     name: string;
     image: string;
+}
+
+// Player Data
+export interface PlayerWorldData {
+    // User ID
+    userId: string;
+    // ID of the world associated with the data
+    worldId: string;
+    // Player belongings
+    characters: GachaItem[];
+    materials: GachaItem[];
+}
+
+export interface GachaItem {
+    itemId: string;
+    quantity: number;
 }
