@@ -66,6 +66,7 @@ export interface Banner {
     id: string;
     worldId: string;
     imageSrc: string;
+    bags: BannerBag[];
 }
 
 export interface BannerBag {

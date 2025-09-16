@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User, Character, Material } from "../types";
+import { ROLE, TwitchData, User, Character, Material, Banner } from "../types";
 import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (
@@ -105,6 +105,32 @@ export const createMaterial = async (
 export const deleteMaterial = async (materialId: string): Promise<void> => {
     const response = await axios.delete(
         `${env.VITE_LUPWORLDS_API_URI}/materials/${materialId}`,
+    );
+    return response.data;
+};
+
+// BANNERS
+
+export const getBanners = async (worldId: string): Promise<Banner[]> => {
+    const response = await axios.get(
+        `${env.VITE_LUPWORLDS_API_URI}/banners?worldId=${worldId}`,
+    );
+    return response.data;
+};
+
+export const createBanner = async (
+    banner: Omit<Banner, "id">,
+): Promise<Material> => {
+    const response = await axios.post(
+        `${env.VITE_LUPWORLDS_API_URI}/banners`,
+        banner,
+    );
+    return response.data;
+};
+
+export const deleteBanner = async (bannerId: string): Promise<void> => {
+    const response = await axios.delete(
+        `${env.VITE_LUPWORLDS_API_URI}/banners/${bannerId}`,
     );
     return response.data;
 };
