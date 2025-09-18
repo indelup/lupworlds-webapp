@@ -71,15 +71,14 @@ export interface Banner {
 
 export interface BannerBag {
     id: string;
-    bannerId: string;
     items: BannerBagItem[];
     chance: number;
 }
 
 export interface BannerBagItem {
     id: string;
-    bagId: string;
-    item: Character | Material;
+    type: "character" | "material";
+    itemId: string;
 }
 
 export interface IPity {

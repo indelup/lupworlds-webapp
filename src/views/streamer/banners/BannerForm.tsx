@@ -1,14 +1,37 @@
-import { Button, Flex, Upload, UploadFile, Spin } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { Banner } from "../../../types";
-import { useState } from "react";
+import {
+    Button,
+    Flex,
+    Upload,
+    UploadFile,
+    Spin,
+    Drawer,
+    Select,
+    Input,
+} from "antd";
+import {
+    DeleteFilled,
+    DeleteOutlined,
+    PlusCircleOutlined,
+    UploadOutlined,
+} from "@ant-design/icons";
+import { Banner, BannerBag, Character, Material } from "../../../types";
+import { act, useEffect, useState } from "react";
 import classes from "./BannerForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
-import { createBanner, uploadImage } from "../../../utils/lupworldsApi";
+import {
+    createBanner,
+    getCharacters,
+    getMaterials,
+    uploadImage,
+} from "../../../utils/lupworldsApi";
+import { v4 as uuidv4 } from "uuid";
+import { CharacterCard } from "../../common/CharacterCard";
 
 type BannerFormProps = {
     bannerId?: string;
+    open: boolean;
+    setOpen: (open: boolean) => void;
     onBannerCreated?: () => void;
 };
 
@@ -29,9 +52,14 @@ const initialBanner = {
 
 export const BannerForm = (props: BannerFormProps) => {
     const user = useStore((state: AppState) => state.user);
+    const { open, setOpen } = props;
     const activeWorldId = user?.worldIds[0] || "";
     const [saving, setSaving] = useState(false);
     const [banner, setBanner] = useState<Banner>(initialBanner);
+    const [loadingItems, setLoadingItems] = useState(false);
+    const [characters, setCharacters] = useState<Character[]>([]);
+    const [materials, setMaterials] = useState<Material[]>([]);
+    const [usedItems, setUsedItems] = useState<string[]>([]);
     const [bannerImage, setBannerImage] = useState<UploadFile>();
 
     // Transform received file to base64 so it can be shown in Preview
@@ -72,10 +100,53 @@ export const BannerForm = (props: BannerFormProps) => {
         }
     };
 
+    useEffect(() => {
+        const fetchItems = async () => {
+            setLoadingItems(true);
+            if (!activeWorldId) {
+                setCharacters([]);
+                setMaterials([]);
+                setLoadingItems(false);
+                return;
+            }
+
+            try {
+                const fetchedCharacters = await getCharacters(activeWorldId);
+                const fetchedMaterials = await getMaterials(activeWorldId);
+                setCharacters(fetchedCharacters);
+                setMaterials(fetchedMaterials);
+            } catch (error) {
+                console.error("Error fetching items::", error);
+                setCharacters([]);
+            } finally {
+                setLoadingItems(false);
+            }
+        };
+
+        fetchItems();
+    }, [activeWorldId]);
+
+    const characterOptions = characters
+        .map((character) => {
+            if (usedItems.includes(character.id)) return;
+            return {
+                value: character.id,
+                label: character.name,
+            };
+        })
+        .filter(Boolean);
+
     return (
-        <>
+        <Drawer
+            placement="right"
+            open={open}
+            onClose={() => setOpen(false)}
+            getContainer={false}
+            size="large"
+            title="Nuevo Banner"
+        >
             <div className={`${saving ? classes.blurred : ""}`}>
-                <Flex className={classes.container} justify="center" gap={24}>
+                <Flex className={classes.container} gap={24}>
                     <Flex
                         className={classes.formColumn}
                         vertical
@@ -100,6 +171,94 @@ export const BannerForm = (props: BannerFormProps) => {
                                 Imagen Banner
                             </Button>
                         </Upload>
+                        {banner.bags.map((bag, idx) => {
+                            return (
+                                <div
+                                    key={bag.id}
+                                    className={classes.bagContainer}
+                                >
+                                    <div className={classes.bagForm}>
+                                        <Select
+                                            placeholder="Añadir Personaje"
+                                            onSelect={(v) => {
+                                                if (v) {
+                                                    const updatedBanner = {
+                                                        ...banner,
+                                                    };
+                                                    const updatedBag =
+                                                        updatedBanner.bags[idx];
+                                                    updatedBag.items.push({
+                                                        id: uuidv4(),
+                                                        type: "character",
+                                                        itemId: v,
+                                                    });
+                                                    updatedBanner.bags[idx] =
+                                                        updatedBag;
+                                                    setBanner(updatedBanner);
+                                                    const newUsedItems = [
+                                                        ...usedItems,
+                                                    ];
+                                                    newUsedItems.push(v);
+                                                    setUsedItems(newUsedItems);
+                                                }
+                                            }}
+                                            options={characterOptions as any}
+                                            value="Añadir Personaje"
+                                        />
+                                        <Select
+                                            placeholder="Añadir Material"
+                                            options={materials.map(
+                                                (material) => {
+                                                    return {
+                                                        value: material.id,
+                                                        label: material.name,
+                                                    };
+                                                },
+                                            )}
+                                        />
+                                        <Input placeholder="Probabilidad" />
+                                        <Button icon={<DeleteOutlined />}>
+                                            Eliminar Bolsa
+                                        </Button>
+                                    </div>
+                                    <div className={classes.bagItemList}>
+                                        {characters.map((character) => {
+                                            for (const item of bag.items) {
+                                                if (
+                                                    item.type === "character" &&
+                                                    item.itemId === character.id
+                                                ) {
+                                                    return (
+                                                        <CharacterCard
+                                                            character={
+                                                                character
+                                                            }
+                                                            small={true}
+                                                        />
+                                                    );
+                                                }
+                                            }
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        <Button
+                            onClick={() => {
+                                const newBag: BannerBag = {
+                                    id: uuidv4(),
+                                    items: [],
+                                    chance: 0,
+                                };
+                                setBanner({
+                                    ...banner,
+                                    bags: [...banner.bags, newBag],
+                                });
+                            }}
+                            icon={<PlusCircleOutlined />}
+                        >
+                            Añadir Bolsa
+                        </Button>
                     </Flex>
                 </Flex>
             </div>
@@ -108,7 +267,7 @@ export const BannerForm = (props: BannerFormProps) => {
                     <Spin tip="Creando Banner" size="large" />
                 </div>
             )}
-        </>
+        </Drawer>
     );
 };
 

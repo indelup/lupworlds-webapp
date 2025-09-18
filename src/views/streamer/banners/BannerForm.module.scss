@@ -3,14 +3,33 @@
     position: relative;
 }
 
-.cardColumn {
+.formColumn {
+    flex-grow: 1;
+    width: 100%;
     height: 100%;
 }
 
-.formColumn {
-    flex-grow: 1;
-    max-width: 400px;
-    height: 100%;
+.bagContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.bagForm {
+    display: flex;
+    gap: 8px
+}
+
+.bagItemList {
+    width: 200%;
+    scale: 0.5;
+    transform-origin: 0% 0%;
+    display: flex;
+    gap: 12px;
+    height: 11.2rem;
 }
 
 .blurred {

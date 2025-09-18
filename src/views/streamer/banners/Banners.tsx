@@ -6,10 +6,12 @@ import { useState, useEffect } from "react";
 import { BannerDelete } from "./BannerDelete";
 import { getBanners } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
+import { BannerForm } from "./BannerForm";
 
 export const Banners = () => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
+    const [formOpen, setFormOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [bannerId, setBannerId] = useState("");
     const [banners, setBanners] = useState<Banner[]>([]);
@@ -45,7 +47,9 @@ export const Banners = () => {
                     icon={<PlusOutlined />}
                     color="cyan"
                     variant="solid"
-                    onClick={() => {}}
+                    onClick={() => {
+                        setFormOpen(true);
+                    }}
                 >
                     New Banner
                 </Button>
@@ -82,6 +86,7 @@ export const Banners = () => {
                     })
                 )}
             </div>
+            <BannerForm open={formOpen} setOpen={setFormOpen} />
             <BannerDelete
                 open={deleteOpen}
                 setOpen={setDeleteOpen}
