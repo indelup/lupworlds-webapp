@@ -9,13 +9,12 @@ import {
     Input,
 } from "antd";
 import {
-    DeleteFilled,
     DeleteOutlined,
     PlusCircleOutlined,
     UploadOutlined,
 } from "@ant-design/icons";
 import { Banner, BannerBag, Character, Material } from "../../../types";
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./BannerForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
@@ -85,6 +84,79 @@ export const BannerForm = (props: BannerFormProps) => {
         });
     };
 
+    const addItemToBag = (
+        bagIndex: number,
+        itemId: string,
+        itemType: "character" | "material",
+    ) => {
+        if (itemId) {
+            const updatedBanner = {
+                ...banner,
+            };
+            const updatedBag = updatedBanner.bags[bagIndex];
+            updatedBag.items.push({
+                id: uuidv4(),
+                type: itemType,
+                itemId,
+            });
+            updatedBanner.bags[bagIndex] = updatedBag;
+            setBanner(updatedBanner);
+            const newUsedItems = [...usedItems];
+            newUsedItems.push(itemId);
+            setUsedItems(newUsedItems);
+        }
+    };
+
+    const removeItemFromBag = (itemId: string, bagIndex: number) => {
+        const updatedBanner = {
+            ...banner,
+        };
+        const updatedBag = updatedBanner.bags[bagIndex];
+
+        const updatedBagItems = updatedBag.items.filter((item) => {
+            if (item.itemId === itemId) return false;
+            return true;
+        });
+
+        updatedBag.items = updatedBagItems;
+
+        updatedBanner.bags[bagIndex] = updatedBag;
+        setBanner(updatedBanner);
+        const newUsedItems = usedItems.filter((itemId) => itemId !== itemId);
+        setUsedItems(newUsedItems);
+    };
+
+    const addBagToBanner = () => {
+        const newBag: BannerBag = {
+            id: uuidv4(),
+            items: [],
+            chance: 0,
+        };
+        setBanner({
+            ...banner,
+            bags: [...banner.bags, newBag],
+        });
+    };
+
+    const removeBagFromBanner = (bagIndex: number) => {
+        const updatedBags = [...banner.bags];
+        const bag = banner.bags[bagIndex];
+        const itemIds = bag.items.map((item) => item.itemId);
+        const updatedUsedItems: string[] = [];
+        usedItems.forEach((itemId) => {
+            if (!itemIds.includes(itemId)) {
+                updatedUsedItems.push(itemId);
+            }
+        });
+        updatedBags.splice(bagIndex, 1);
+
+        setUsedItems(updatedUsedItems);
+        setBanner({
+            ...banner,
+            bags: updatedBags,
+        });
+    };
+
     const onSave = async () => {
         try {
             setSaving(true);
@@ -136,6 +208,16 @@ export const BannerForm = (props: BannerFormProps) => {
         })
         .filter(Boolean);
 
+    const materialsOptions = materials
+        .map((material) => {
+            if (usedItems.includes(material.id)) return;
+            return {
+                value: material.id,
+                label: material.name,
+            };
+        })
+        .filter(Boolean);
+
     return (
         <Drawer
             placement="right"
@@ -181,43 +263,35 @@ export const BannerForm = (props: BannerFormProps) => {
                                         <Select
                                             placeholder="Añadir Personaje"
                                             onSelect={(v) => {
-                                                if (v) {
-                                                    const updatedBanner = {
-                                                        ...banner,
-                                                    };
-                                                    const updatedBag =
-                                                        updatedBanner.bags[idx];
-                                                    updatedBag.items.push({
-                                                        id: uuidv4(),
-                                                        type: "character",
-                                                        itemId: v,
-                                                    });
-                                                    updatedBanner.bags[idx] =
-                                                        updatedBag;
-                                                    setBanner(updatedBanner);
-                                                    const newUsedItems = [
-                                                        ...usedItems,
-                                                    ];
-                                                    newUsedItems.push(v);
-                                                    setUsedItems(newUsedItems);
-                                                }
+                                                addItemToBag(
+                                                    idx,
+                                                    v,
+                                                    "character",
+                                                );
                                             }}
                                             options={characterOptions as any}
                                             value="Añadir Personaje"
                                         />
                                         <Select
                                             placeholder="Añadir Material"
-                                            options={materials.map(
-                                                (material) => {
-                                                    return {
-                                                        value: material.id,
-                                                        label: material.name,
-                                                    };
-                                                },
-                                            )}
+                                            onSelect={(v) => {
+                                                addItemToBag(
+                                                    idx,
+                                                    v,
+                                                    "material",
+                                                );
+                                            }}
+                                            options={materialsOptions as any}
                                         />
                                         <Input placeholder="Probabilidad" />
-                                        <Button icon={<DeleteOutlined />}>
+                                        <Button
+                                            color="danger"
+                                            variant="solid"
+                                            onClick={() => {
+                                                removeBagFromBanner(idx);
+                                            }}
+                                            icon={<DeleteOutlined />}
+                                        >
                                             Eliminar Bolsa
                                         </Button>
                                     </div>
@@ -229,12 +303,33 @@ export const BannerForm = (props: BannerFormProps) => {
                                                     item.itemId === character.id
                                                 ) {
                                                     return (
-                                                        <CharacterCard
-                                                            character={
-                                                                character
+                                                        <div
+                                                            className={
+                                                                classes.bagItem
                                                             }
-                                                            small={true}
-                                                        />
+                                                        >
+                                                            <CharacterCard
+                                                                character={
+                                                                    character
+                                                                }
+                                                            />
+                                                            <Button
+                                                                size="large"
+                                                                variant="solid"
+                                                                onClick={() => {
+                                                                    removeItemFromBag(
+                                                                        character.id,
+                                                                        idx,
+                                                                    );
+                                                                }}
+                                                                icon={
+                                                                    <DeleteOutlined />
+                                                                }
+                                                                color="danger"
+                                                            >
+                                                                Eliminar
+                                                            </Button>
+                                                        </div>
                                                     );
                                                 }
                                             }
@@ -244,17 +339,7 @@ export const BannerForm = (props: BannerFormProps) => {
                             );
                         })}
                         <Button
-                            onClick={() => {
-                                const newBag: BannerBag = {
-                                    id: uuidv4(),
-                                    items: [],
-                                    chance: 0,
-                                };
-                                setBanner({
-                                    ...banner,
-                                    bags: [...banner.bags, newBag],
-                                });
-                            }}
+                            onClick={addBagToBanner}
                             icon={<PlusCircleOutlined />}
                         >
                             Añadir Bolsa

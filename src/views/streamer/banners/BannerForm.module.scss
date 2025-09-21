@@ -25,11 +25,16 @@
 
 .bagItemList {
     width: 200%;
-    scale: 0.5;
     transform-origin: 0% 0%;
     display: flex;
     gap: 12px;
-    height: 11.2rem;
+}
+
+.bagItem {
+    display: flex;
+    height: 100%;
+    gap: 12px;
+    flex-direction: column;
 }
 
 .blurred {
