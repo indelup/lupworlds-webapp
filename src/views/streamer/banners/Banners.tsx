@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { BannerDelete } from "./BannerDelete";
 import { getBanners } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
-import { BannerForm } from "./BannerForm";
+import { BannerForm } from "./BannerForm/BannerForm";
 
 export const Banners = () => {
     const user = useStore((state: AppState) => state.user);

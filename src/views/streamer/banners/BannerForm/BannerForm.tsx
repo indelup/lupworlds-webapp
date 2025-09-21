@@ -1,31 +1,18 @@
-import {
-    Button,
-    Flex,
-    Upload,
-    UploadFile,
-    Spin,
-    Drawer,
-    Select,
-    Input,
-} from "antd";
-import {
-    DeleteOutlined,
-    PlusCircleOutlined,
-    UploadOutlined,
-} from "@ant-design/icons";
-import { Banner, BannerBag, Character, Material } from "../../../types";
+import { Button, Flex, Upload, UploadFile, Spin, Drawer } from "antd";
+import { PlusCircleOutlined, UploadOutlined } from "@ant-design/icons";
+import { Banner, BannerBag, Character, Material } from "../../../../types";
 import { useEffect, useState } from "react";
 import classes from "./BannerForm.module.scss";
-import { AppState, useStore } from "../../../hooks/useStore";
+import { AppState, useStore } from "../../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
 import {
     createBanner,
     getCharacters,
     getMaterials,
     uploadImage,
-} from "../../../utils/lupworldsApi";
+} from "../../../../utils/lupworldsApi";
 import { v4 as uuidv4 } from "uuid";
-import { CharacterCard } from "../../common/CharacterCard";
+import { BannerBagForm } from "./BannerBagForm";
 
 type BannerFormProps = {
     bannerId?: string;
@@ -255,87 +242,17 @@ export const BannerForm = (props: BannerFormProps) => {
                         </Upload>
                         {banner.bags.map((bag, idx) => {
                             return (
-                                <div
-                                    key={bag.id}
-                                    className={classes.bagContainer}
-                                >
-                                    <div className={classes.bagForm}>
-                                        <Select
-                                            placeholder="Añadir Personaje"
-                                            onSelect={(v) => {
-                                                addItemToBag(
-                                                    idx,
-                                                    v,
-                                                    "character",
-                                                );
-                                            }}
-                                            options={characterOptions as any}
-                                            value="Añadir Personaje"
-                                        />
-                                        <Select
-                                            placeholder="Añadir Material"
-                                            onSelect={(v) => {
-                                                addItemToBag(
-                                                    idx,
-                                                    v,
-                                                    "material",
-                                                );
-                                            }}
-                                            options={materialsOptions as any}
-                                        />
-                                        <Input placeholder="Probabilidad" />
-                                        <Button
-                                            color="danger"
-                                            variant="solid"
-                                            onClick={() => {
-                                                removeBagFromBanner(idx);
-                                            }}
-                                            icon={<DeleteOutlined />}
-                                        >
-                                            Eliminar Bolsa
-                                        </Button>
-                                    </div>
-                                    <div className={classes.bagItemList}>
-                                        {characters.map((character) => {
-                                            for (const item of bag.items) {
-                                                if (
-                                                    item.type === "character" &&
-                                                    item.itemId === character.id
-                                                ) {
-                                                    return (
-                                                        <div
-                                                            className={
-                                                                classes.bagItem
-                                                            }
-                                                        >
-                                                            <CharacterCard
-                                                                character={
-                                                                    character
-                                                                }
-                                                            />
-                                                            <Button
-                                                                size="large"
-                                                                variant="solid"
-                                                                onClick={() => {
-                                                                    removeItemFromBag(
-                                                                        character.id,
-                                                                        idx,
-                                                                    );
-                                                                }}
-                                                                icon={
-                                                                    <DeleteOutlined />
-                                                                }
-                                                                color="danger"
-                                                            >
-                                                                Eliminar
-                                                            </Button>
-                                                        </div>
-                                                    );
-                                                }
-                                            }
-                                        })}
-                                    </div>
-                                </div>
+                                <BannerBagForm
+                                    bag={bag}
+                                    bagIndex={idx}
+                                    removeBagFromBanner={removeBagFromBanner}
+                                    addItemToBag={addItemToBag}
+                                    removeItemFromBag={removeItemFromBag}
+                                    characters={characters}
+                                    characterOptions={characterOptions as any}
+                                    materials={materials}
+                                    materialsOptions={materialsOptions as any}
+                                />
                             );
                         })}
                         <Button
