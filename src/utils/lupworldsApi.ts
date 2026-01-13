@@ -77,6 +77,15 @@ export const createCharacter = async (
     return response.data;
 };
 
+export const updateCharacter = async (
+    character: Character,
+): Promise<Character> => {
+    const response = await axios.put(
+        `${env.VITE_LUPWORLDS_API_URI}/characters/${character.id}`,
+        character,
+    );
+    return response.data;
+};
 export const deleteCharacter = async (characterId: string): Promise<void> => {
     const response = await axios.delete(
         `${env.VITE_LUPWORLDS_API_URI}/characters/${characterId}`,

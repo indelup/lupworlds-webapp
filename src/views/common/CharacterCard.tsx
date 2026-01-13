@@ -3,20 +3,20 @@ import Tilt from "react-parallax-tilt";
 import { Character } from "../../types";
 import { Rate } from "antd";
 import env from "../../env";
+import { isBase64 } from "../../utils/imageHelpers";
 
 type CharacterCardProps = {
     character: Character;
-    isPreview?: boolean;
     mainSrc?: string;
     bgSrc?: string;
 };
 
 export const CharacterCard = (props: CharacterCardProps) => {
     const { character } = props;
-    const characterSrc = props.isPreview
+    const characterSrc = isBase64(character.characterSrc)
         ? character.characterSrc
         : `${env.VITE_CHARACTER_BUCKET_URI}/${character.characterSrc}`;
-    const backgroundSrc = props.isPreview
+    const backgroundSrc = isBase64(character.backgroundSrc)
         ? character.backgroundSrc
         : `${env.VITE_CHARACTER_BUCKET_URI}/${character.backgroundSrc}`;
 

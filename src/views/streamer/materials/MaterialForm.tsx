@@ -16,20 +16,13 @@ import classes from "./MaterialForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
 import { createMaterial, uploadImage } from "../../../utils/lupworldsApi";
+import { getBase64 } from "../../../utils/imageHelpers";
 
 type MaterialFormProps = {
     open: boolean;
     setOpen: (open: boolean) => void;
     onMaterialCreated?: () => void;
 };
-
-const getBase64 = (file: any): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-    });
 
 const initialMaterial = {
     id: "temp",

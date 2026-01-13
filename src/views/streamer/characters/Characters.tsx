@@ -13,8 +13,12 @@ export const Characters = () => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
     const [formOpen, setFormOpen] = useState(false);
+    const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [deleteOpen, setDeleteOpen] = useState(false);
-    const [characterId, setCharacterId] = useState("");
+    const [activeCharacter, setActiveCharacter] = useState<
+        Character | undefined
+    >();
+
     const [characters, setCharacters] = useState<Character[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -49,6 +53,7 @@ export const Characters = () => {
                     color="cyan"
                     variant="solid"
                     onClick={() => {
+                        setFormMode("create");
                         setFormOpen(true);
                     }}
                 >
@@ -63,15 +68,17 @@ export const Characters = () => {
                 ) : (
                     characters.map((character) => {
                         return (
-                            <Flex gap={8} vertical>
-                                <CharacterCard
-                                    character={character}
-                                    key={character.id}
-                                />
+                            <Flex key={character.id} gap={8} vertical>
+                                <CharacterCard character={character} />
                                 <Flex gap={4} justify="end" className="mt-4">
                                     <Button
                                         type="primary"
                                         shape="circle"
+                                        onClick={() => {
+                                            setActiveCharacter(character);
+                                            setFormMode("edit");
+                                            setFormOpen(true);
+                                        }}
                                         icon={<EditFilled />}
                                     />
                                     <Button
@@ -80,8 +87,8 @@ export const Characters = () => {
                                         icon={<DeleteFilled />}
                                         danger
                                         onClick={() => {
+                                            setActiveCharacter(character);
                                             setDeleteOpen(true);
-                                            setCharacterId(character.id);
                                         }}
                                     />
                                 </Flex>
@@ -90,32 +97,39 @@ export const Characters = () => {
                     })
                 )}
             </div>
-            <CharacterForm
-                open={formOpen}
-                setOpen={setFormOpen}
-                onCharacterCreated={() => {
-                    // Refresh characters list when a new character is created
-                    const fetchCharacters = async () => {
-                        if (activeWorldId) {
-                            try {
-                                const fetchedCharacters =
-                                    await getCharacters(activeWorldId);
-                                setCharacters(fetchedCharacters);
-                            } catch (error) {
-                                console.error(
-                                    "Error refreshing characters:",
-                                    error,
-                                );
+            {formOpen && (
+                <CharacterForm
+                    open={formOpen}
+                    setOpen={setFormOpen}
+                    mode={formMode}
+                    onCharacterCreated={() => {
+                        // Refresh characters list when a new character is created
+                        const fetchCharacters = async () => {
+                            if (activeWorldId) {
+                                try {
+                                    const fetchedCharacters =
+                                        await getCharacters(activeWorldId);
+                                    setCharacters(fetchedCharacters);
+                                } catch (error) {
+                                    console.error(
+                                        "Error refreshing characters:",
+                                        error,
+                                    );
+                                }
                             }
-                        }
-                    };
-                    fetchCharacters();
-                }}
-            />
+                        };
+                        fetchCharacters();
+                    }}
+                    onClose={() => {
+                        setActiveCharacter(undefined);
+                    }}
+                    existingCharacter={activeCharacter}
+                />
+            )}
             <CharacterDelete
                 open={deleteOpen}
                 setOpen={setDeleteOpen}
-                characterId={characterId}
+                characterId={activeCharacter?.id || ""}
                 onCharacterDeleted={() => {
                     // Refresh characters list when a character is deleted
                     const fetchCharacters = async () => {
@@ -124,7 +138,7 @@ export const Characters = () => {
                                 const fetchedCharacters =
                                     await getCharacters(activeWorldId);
                                 setCharacters(fetchedCharacters);
-                                setCharacterId("");
+                                setActiveCharacter(undefined);
                             } catch (error) {
                                 console.error(
                                     "Error refreshing characters:",

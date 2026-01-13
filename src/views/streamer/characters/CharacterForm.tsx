@@ -15,21 +15,21 @@ import { useState } from "react";
 import classes from "./CharacterForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
-import { createCharacter, uploadImage } from "../../../utils/lupworldsApi";
+import {
+    createCharacter,
+    updateCharacter,
+    uploadImage,
+} from "../../../utils/lupworldsApi";
+import { getBase64 } from "../../../utils/imageHelpers";
 
 type CharacterFormProps = {
     open: boolean;
+    mode: "create" | "edit";
     setOpen: (open: boolean) => void;
-    onCharacterCreated?: () => void;
+    onCharacterCreated: () => void;
+    onClose: () => void;
+    existingCharacter?: Character;
 };
-
-const getBase64 = (file: any): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-    });
 
 const initialCharacter = {
     id: "temp",
@@ -42,11 +42,20 @@ const initialCharacter = {
     rarity: 1,
 };
 
-export const CharacterForm = (props: CharacterFormProps) => {
+export const CharacterForm = ({
+    open,
+    mode,
+    setOpen,
+    onCharacterCreated,
+    onClose,
+    existingCharacter,
+}: CharacterFormProps) => {
     const user = useStore((state: AppState) => state.user);
     const activeWorldId = user?.worldIds[0] || "";
     const [saving, setSaving] = useState(false);
-    const [character, setCharacter] = useState<Character>(initialCharacter);
+    const [character, setCharacter] = useState<Character>(
+        existingCharacter ? existingCharacter : initialCharacter,
+    );
     const [characterImage, setCharacterImage] = useState<UploadFile>();
     const [backgroundImage, setBackgroundImage] = useState<UploadFile>();
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -84,10 +93,11 @@ export const CharacterForm = (props: CharacterFormProps) => {
 
     const validate = () => {
         const errors: Record<string, string> = {};
-        if (!characterImage) {
+        // Only validate images for create mode
+        if (mode === "create" && !characterImage) {
             errors["characterImage"] = "Campo requerido";
         }
-        if (!backgroundImage) {
+        if (mode === "create" && !backgroundImage) {
             errors["backgroundImage"] = "Campo requerido";
         }
         if (!character.name) {
@@ -111,6 +121,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                 const finalCharacter = { ...character, worldId: activeWorldId };
                 await saveCharacter(
                     finalCharacter,
+                    mode,
                     characterImage,
                     backgroundImage,
                 );
@@ -119,8 +130,8 @@ export const CharacterForm = (props: CharacterFormProps) => {
                 setCharacter(initialCharacter);
                 setCharacterImage(undefined);
                 setBackgroundImage(undefined);
-                props.setOpen(false);
-                props.onCharacterCreated?.();
+                setOpen(false);
+                onCharacterCreated?.();
             }
         } catch (error) {
             console.error("Error saving character:", error);
@@ -131,14 +142,17 @@ export const CharacterForm = (props: CharacterFormProps) => {
 
     return (
         <Modal
-            open={props.open}
+            open={open}
             title="Nuevo Personaje"
             centered
             width={700}
             cancelText={"Cancelar"}
             okText={"Guardar"}
             onCancel={() => {
-                if (!saving) props.setOpen(false);
+                if (!saving) {
+                    setOpen(false);
+                    onClose?.();
+                }
             }}
             onOk={onSave}
             okButtonProps={{ disabled: saving }}
@@ -151,7 +165,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         align="center"
                         justify="center"
                     >
-                        <CharacterCard character={character} isPreview />
+                        <CharacterCard character={character} />
                     </Flex>
                     <Flex
                         className={classes.formColumn}
@@ -164,6 +178,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                             status={
                                 !character.name && errors.name ? "error" : ""
                             }
+                            value={character.name}
                             onChange={(e) => {
                                 const name = e.target.value;
                                 setCharacter({ ...character, name });
@@ -171,6 +186,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         />
                         <Input.TextArea
                             placeholder="Description"
+                            value={character.description}
                             status={
                                 !character.description && errors.description
                                     ? "error"
@@ -186,6 +202,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                         />
                         <Input
                             placeholder="Artista"
+                            value={character.artist}
                             status={
                                 !character.artist && errors.artist
                                     ? "error"
@@ -245,6 +262,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
                             </Button>
                         </Upload>
                         <Rate
+                            value={character.rarity}
                             onChange={(v) => {
                                 setCharacter({ ...character, rarity: v });
                             }}
@@ -263,6 +281,7 @@ export const CharacterForm = (props: CharacterFormProps) => {
 
 const saveCharacter = async (
     character: Character,
+    mode: "create" | "edit",
     characterImage?: UploadFile,
     backgroundImage?: UploadFile,
 ) => {
@@ -279,9 +298,17 @@ const saveCharacter = async (
     }
 
     // Create the character with the uploaded image URLs
-    await createCharacter({
-        ...character,
-        characterSrc,
-        backgroundSrc,
-    });
+    if (mode === "create") {
+        await createCharacter({
+            ...character,
+            characterSrc,
+            backgroundSrc,
+        });
+    } else {
+        await updateCharacter({
+            ...character,
+            characterSrc,
+            backgroundSrc,
+        });
+    }
 };
