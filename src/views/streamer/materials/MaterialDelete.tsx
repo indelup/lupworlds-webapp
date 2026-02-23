@@ -1,7 +1,7 @@
 import { Flex, Modal, Spin } from "antd";
-import { useState } from "react";
 import classes from "./MaterialForm.module.scss";
-import { deleteMaterial } from "../../../utils/lupworldsApi";
+import { AppState, useStore } from "../../../hooks/useStore";
+import { useMaterialClient } from "../../../hooks/useMaterialClient";
 
 type MaterialDeleteProps = {
     open: boolean;
@@ -11,43 +11,41 @@ type MaterialDeleteProps = {
 };
 
 export const MaterialDelete = (props: MaterialDeleteProps) => {
-    const { open, setOpen, materialId, onMaterialDeleted } = props;
-    const [deleting, setDeleting] = useState(false);
+    const { materialId } = props;
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const { deleteMaterial, isDeleting } = useMaterialClient(activeWorldId);
 
     const onDelete = async () => {
         try {
-            setDeleting(true);
             await deleteMaterial(materialId);
-            setOpen(false);
-            onMaterialDeleted?.();
+            props.setOpen(false);
+            props.onMaterialDeleted?.();
         } catch (error) {
             console.error("Error deleting material:", error);
-        } finally {
-            setDeleting(false);
         }
     };
 
     return (
         <Modal
-            open={open}
+            open={props.open}
             title="Borrar Material"
             centered
             width={700}
             cancelText={"Cancelar"}
             okText={"Confirmar"}
             onCancel={() => {
-                if (!deleting) props.setOpen(false);
+                if (!isDeleting) props.setOpen(false);
             }}
             onOk={onDelete}
-            okButtonProps={{ disabled: deleting, color: "danger" }}
-            cancelButtonProps={{ disabled: deleting }}
+            okButtonProps={{ disabled: isDeleting, color: "danger" }}
+            cancelButtonProps={{ disabled: isDeleting }}
         >
-            <div className={`${deleting ? classes.blurred : ""}`}>
+            <div className={`${isDeleting ? classes.blurred : ""}`}>
                 <Flex className={classes.container} justify="center" gap={24}>
                     ¿Estás seguro de querer eliminar este material?
                 </Flex>
             </div>
-            {deleting && (
+            {isDeleting && (
                 <div className={classes.spinner}>
                     <Spin tip="Borrando Material" size="large" />
                 </div>

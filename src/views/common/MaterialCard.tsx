@@ -3,22 +3,26 @@ import Tilt from "react-parallax-tilt";
 import { Material } from "../../types";
 import { Rate } from "antd";
 import env from "../../env";
+import { isBase64 } from "../../utils/imageHelpers";
 
 type MaterialCardProps = {
     material: Material;
-    isPreview?: boolean;
     mainSrc?: string;
     bgSrc?: string;
 };
 
 export const MaterialCard = (props: MaterialCardProps) => {
     const { material } = props;
-    const materialSrc = props.isPreview
-        ? material.materialSrc
-        : `${env.VITE_MATERIAL_BUCKET_URI}/${material.materialSrc}`;
-    const backgroundSrc = props.isPreview
-        ? material.backgroundSrc
-        : `${env.VITE_MATERIAL_BUCKET_URI}/${material.backgroundSrc}`;
+    const materialSrc = !material.materialSrc
+        ? ""
+        : isBase64(material.materialSrc)
+          ? material.materialSrc
+          : `${env.VITE_MATERIAL_BUCKET_URI}/${material.materialSrc}`;
+    const backgroundSrc = !material.backgroundSrc
+        ? ""
+        : isBase64(material.backgroundSrc)
+          ? material.backgroundSrc
+          : `${env.VITE_MATERIAL_BUCKET_URI}/${material.backgroundSrc}`;
 
     return (
         <Tilt

@@ -2,43 +2,23 @@ import { Material } from "../../../types";
 import classes from "./Materials.module.scss";
 import { Button, Flex } from "antd";
 import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MaterialDelete } from "./MaterialDelete";
-import { getMaterials } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { MaterialCard } from "../../common/MaterialCard";
 import { MaterialForm } from "./MaterialForm";
+import { useMaterialClient } from "../../../hooks/useMaterialClient";
 
 export const Materials = () => {
     const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const [formOpen, setFormOpen] = useState(false);
+    const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [deleteOpen, setDeleteOpen] = useState(false);
-    const [materialId, setMaterialId] = useState("");
-    const [materials, setMaterials] = useState<Material[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [activeMaterial, setActiveMaterial] = useState<
+        Material | undefined
+    >();
 
-    useEffect(() => {
-        const fetchMaterials = async () => {
-            if (!activeWorldId) {
-                setMaterials([]);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                setLoading(true);
-                const fetchedMaterials = await getMaterials(activeWorldId);
-                setMaterials(fetchedMaterials);
-            } catch (error) {
-                console.error("Error fetching materials:", error);
-                setMaterials([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMaterials();
-    }, [activeWorldId]);
+    const { materials, isFetching: loading } = useMaterialClient(activeWorldId);
 
     return (
         <>
@@ -48,6 +28,8 @@ export const Materials = () => {
                     color="cyan"
                     variant="solid"
                     onClick={() => {
+                        setActiveMaterial(undefined);
+                        setFormMode("create");
                         setFormOpen(true);
                     }}
                 >
@@ -62,15 +44,17 @@ export const Materials = () => {
                 ) : (
                     materials.map((material) => {
                         return (
-                            <Flex gap={8} vertical>
-                                <MaterialCard
-                                    material={material}
-                                    key={material.id}
-                                />
+                            <Flex gap={8} vertical key={material.id}>
+                                <MaterialCard material={material} />
                                 <Flex gap={4} justify="end" className="mt-4">
                                     <Button
                                         type="primary"
                                         shape="circle"
+                                        onClick={() => {
+                                            setActiveMaterial(material);
+                                            setFormMode("edit");
+                                            setFormOpen(true);
+                                        }}
                                         icon={<EditFilled />}
                                     />
                                     <Button
@@ -79,8 +63,8 @@ export const Materials = () => {
                                         icon={<DeleteFilled />}
                                         danger
                                         onClick={() => {
+                                            setActiveMaterial(material);
                                             setDeleteOpen(true);
-                                            setMaterialId(material.id);
                                         }}
                                     />
                                 </Flex>
@@ -89,50 +73,24 @@ export const Materials = () => {
                     })
                 )}
             </div>
-            <MaterialForm
-                open={formOpen}
-                setOpen={setFormOpen}
-                onMaterialCreated={() => {
-                    // Refresh materials list when a new material is created
-                    const fetchMaterials = async () => {
-                        if (activeWorldId) {
-                            try {
-                                const fetchedMaterials =
-                                    await getMaterials(activeWorldId);
-                                setMaterials(fetchedMaterials);
-                            } catch (error) {
-                                console.error(
-                                    "Error refreshing materials:",
-                                    error,
-                                );
-                            }
-                        }
-                    };
-                    fetchMaterials();
-                }}
-            />
+            {formOpen && (
+                <MaterialForm
+                    open={formOpen}
+                    setOpen={setFormOpen}
+                    mode={formMode}
+                    onMaterialCreated={() => {}}
+                    onClose={() => {
+                        setActiveMaterial(undefined);
+                    }}
+                    existingMaterial={activeMaterial}
+                />
+            )}
             <MaterialDelete
                 open={deleteOpen}
                 setOpen={setDeleteOpen}
-                materialId={materialId}
+                materialId={activeMaterial?.id || ""}
                 onMaterialDeleted={() => {
-                    // Refresh material list when a material is deleted
-                    const fetchMaterials = async () => {
-                        if (activeWorldId) {
-                            try {
-                                const fetchedMaterials =
-                                    await getMaterials(activeWorldId);
-                                setMaterials(fetchedMaterials);
-                                setMaterialId("");
-                            } catch (error) {
-                                console.error(
-                                    "Error refreshing materials:",
-                                    error,
-                                );
-                            }
-                        }
-                    };
-                    fetchMaterials();
+                    setActiveMaterial(undefined);
                 }}
             />
         </>

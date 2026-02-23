@@ -111,6 +111,16 @@ export const createMaterial = async (
     return response.data;
 };
 
+export const updateMaterial = async (
+    material: Material,
+): Promise<Material> => {
+    const response = await axios.put(
+        `${env.VITE_LUPWORLDS_API_URI}/materials/${material.id}`,
+        material,
+    );
+    return response.data;
+};
+
 export const deleteMaterial = async (materialId: string): Promise<void> => {
     const response = await axios.delete(
         `${env.VITE_LUPWORLDS_API_URI}/materials/${materialId}`,

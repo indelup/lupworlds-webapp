@@ -28,6 +28,7 @@ export const Characters = () => {
                     color="cyan"
                     variant="solid"
                     onClick={() => {
+                        setActiveCharacter(undefined);
                         setFormMode("create");
                         setFormOpen(true);
                     }}

@@ -13,12 +13,16 @@ type CharacterCardProps = {
 
 export const CharacterCard = (props: CharacterCardProps) => {
     const { character } = props;
-    const characterSrc = isBase64(character.characterSrc)
-        ? character.characterSrc
-        : `${env.VITE_CHARACTER_BUCKET_URI}/${character.characterSrc}`;
-    const backgroundSrc = isBase64(character.backgroundSrc)
-        ? character.backgroundSrc
-        : `${env.VITE_CHARACTER_BUCKET_URI}/${character.backgroundSrc}`;
+    const characterSrc = !character.characterSrc
+        ? ""
+        : isBase64(character.characterSrc)
+          ? character.characterSrc
+          : `${env.VITE_CHARACTER_BUCKET_URI}/${character.characterSrc}`;
+    const backgroundSrc = !character.backgroundSrc
+        ? ""
+        : isBase64(character.backgroundSrc)
+          ? character.backgroundSrc
+          : `${env.VITE_CHARACTER_BUCKET_URI}/${character.backgroundSrc}`;
 
     return (
         <Tilt

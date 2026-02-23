@@ -14,14 +14,18 @@ import { Material } from "../../../types";
 import { useState } from "react";
 import classes from "./MaterialForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
+import { useMaterialClient } from "../../../hooks/useMaterialClient";
 import { UploadChangeParam } from "antd/es/upload";
-import { createMaterial, uploadImage } from "../../../utils/lupworldsApi";
+import { uploadImage } from "../../../utils/lupworldsApi";
 import { getBase64 } from "../../../utils/imageHelpers";
 
 type MaterialFormProps = {
     open: boolean;
+    mode: "create" | "edit";
     setOpen: (open: boolean) => void;
-    onMaterialCreated?: () => void;
+    onMaterialCreated: () => void;
+    onClose: () => void;
+    existingMaterial?: Material;
 };
 
 const initialMaterial = {
@@ -35,10 +39,20 @@ const initialMaterial = {
     rarity: 1,
 };
 
-export const MaterialForm = (props: MaterialFormProps) => {
+export const MaterialForm = ({
+    open,
+    mode,
+    setOpen,
+    onMaterialCreated,
+    onClose,
+    existingMaterial,
+}: MaterialFormProps) => {
     const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const { createMaterial, updateMaterial } = useMaterialClient(activeWorldId);
     const [saving, setSaving] = useState(false);
-    const [material, setMaterial] = useState<Material>(initialMaterial);
+    const [material, setMaterial] = useState<Material>(
+        existingMaterial ? existingMaterial : initialMaterial,
+    );
     const [materialImage, setMaterialImage] = useState<UploadFile>();
     const [backgroundImage, setBackgroundImage] = useState<UploadFile>();
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,10 +90,11 @@ export const MaterialForm = (props: MaterialFormProps) => {
 
     const validate = () => {
         const errors: Record<string, string> = {};
-        if (!materialImage) {
+        // Only validate images for create mode
+        if (mode === "create" && !materialImage) {
             errors["materialImage"] = "Campo requerido";
         }
-        if (!backgroundImage) {
+        if (mode === "create" && !backgroundImage) {
             errors["backgroundImage"] = "Campo requerido";
         }
         if (!material.name) {
@@ -103,16 +118,19 @@ export const MaterialForm = (props: MaterialFormProps) => {
                 const finalMaterial = { ...material, worldId: activeWorldId };
                 await saveMaterial(
                     finalMaterial,
+                    mode,
                     materialImage,
                     backgroundImage,
+                    createMaterial,
+                    updateMaterial,
                 );
 
                 // Reset form state and close modal
                 setMaterial(initialMaterial);
                 setMaterialImage(undefined);
                 setBackgroundImage(undefined);
-                props.setOpen(false);
-                props.onMaterialCreated?.();
+                setOpen(false);
+                onMaterialCreated?.();
             }
         } catch (error) {
             console.error("Error saving material:", error);
@@ -123,14 +141,17 @@ export const MaterialForm = (props: MaterialFormProps) => {
 
     return (
         <Modal
-            open={props.open}
+            open={open}
             title="Nuevo Material"
             centered
             width={700}
             cancelText={"Cancelar"}
             okText={"Guardar"}
             onCancel={() => {
-                if (!saving) props.setOpen(false);
+                if (!saving) {
+                    setOpen(false);
+                    onClose?.();
+                }
             }}
             onOk={onSave}
             okButtonProps={{ disabled: saving }}
@@ -143,7 +164,7 @@ export const MaterialForm = (props: MaterialFormProps) => {
                         align="center"
                         justify="center"
                     >
-                        <MaterialCard material={material} isPreview />
+                        <MaterialCard material={material} />
                     </Flex>
                     <Flex
                         className={classes.formColumn}
@@ -156,6 +177,7 @@ export const MaterialForm = (props: MaterialFormProps) => {
                             status={
                                 !material.name && errors.name ? "error" : ""
                             }
+                            value={material.name}
                             onChange={(e) => {
                                 const name = e.target.value;
                                 setMaterial({ ...material, name });
@@ -163,6 +185,7 @@ export const MaterialForm = (props: MaterialFormProps) => {
                         />
                         <Input.TextArea
                             placeholder="Description"
+                            value={material.description}
                             status={
                                 !material.description && errors.description
                                     ? "error"
@@ -178,6 +201,7 @@ export const MaterialForm = (props: MaterialFormProps) => {
                         />
                         <Input
                             placeholder="Artista"
+                            value={material.artist}
                             status={
                                 !material.artist && errors.artist ? "error" : ""
                             }
@@ -235,6 +259,7 @@ export const MaterialForm = (props: MaterialFormProps) => {
                             </Button>
                         </Upload>
                         <Rate
+                            value={material.rarity}
                             onChange={(v) => {
                                 setMaterial({ ...material, rarity: v });
                             }}
@@ -253,25 +278,25 @@ export const MaterialForm = (props: MaterialFormProps) => {
 
 const saveMaterial = async (
     material: Material,
+    mode: "create" | "edit",
     materialImage?: UploadFile,
     backgroundImage?: UploadFile,
+    onCreate?: (m: Omit<Material, "id">) => Promise<Material>,
+    onUpdate?: (m: Material) => Promise<Material>,
 ) => {
     let materialSrc = material.materialSrc;
     let backgroundSrc = material.backgroundSrc;
 
-    // Upload material image if provided
     if (materialImage) {
         materialSrc = await uploadImage(materialImage, "materials");
     }
-    // Upload background image if provided
     if (backgroundImage) {
-        backgroundSrc = await uploadImage(backgroundImage, "materials"); // Use the S3 key as the source
+        backgroundSrc = await uploadImage(backgroundImage, "materials");
     }
 
-    // Create the material with the uploaded image URLs
-    await createMaterial({
-        ...material,
-        materialSrc,
-        backgroundSrc,
-    });
+    if (mode === "create") {
+        await onCreate?.({ ...material, materialSrc, backgroundSrc });
+    } else {
+        await onUpdate?.({ ...material, materialSrc, backgroundSrc });
+    }
 };
