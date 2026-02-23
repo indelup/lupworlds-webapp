@@ -14,12 +14,9 @@ import { Character } from "../../../types";
 import { useState } from "react";
 import classes from "./CharacterForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";
+import { useCharacterClient } from "../../../hooks/useCharacterClient";
 import { UploadChangeParam } from "antd/es/upload";
-import {
-    createCharacter,
-    updateCharacter,
-    uploadImage,
-} from "../../../utils/lupworldsApi";
+import { uploadImage } from "../../../utils/lupworldsApi";
 import { getBase64 } from "../../../utils/imageHelpers";
 
 type CharacterFormProps = {
@@ -50,8 +47,8 @@ export const CharacterForm = ({
     onClose,
     existingCharacter,
 }: CharacterFormProps) => {
-    const user = useStore((state: AppState) => state.user);
-    const activeWorldId = user?.worldIds[0] || "";
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const { createCharacter, updateCharacter } = useCharacterClient(activeWorldId);
     const [saving, setSaving] = useState(false);
     const [character, setCharacter] = useState<Character>(
         existingCharacter ? existingCharacter : initialCharacter,
@@ -124,6 +121,8 @@ export const CharacterForm = ({
                     mode,
                     characterImage,
                     backgroundImage,
+                    createCharacter,
+                    updateCharacter,
                 );
 
                 // Reset form state and close modal
@@ -284,31 +283,22 @@ const saveCharacter = async (
     mode: "create" | "edit",
     characterImage?: UploadFile,
     backgroundImage?: UploadFile,
+    onCreate?: (c: Omit<Character, "id">) => Promise<Character>,
+    onUpdate?: (c: Character) => Promise<Character>,
 ) => {
     let characterSrc = character.characterSrc;
     let backgroundSrc = character.backgroundSrc;
 
-    // Upload character image if provided
     if (characterImage) {
         characterSrc = await uploadImage(characterImage, "characters");
     }
-    // Upload background image if provided
     if (backgroundImage) {
-        backgroundSrc = await uploadImage(backgroundImage, "characters"); // Use the S3 key as the source
+        backgroundSrc = await uploadImage(backgroundImage, "characters");
     }
 
-    // Create the character with the uploaded image URLs
     if (mode === "create") {
-        await createCharacter({
-            ...character,
-            characterSrc,
-            backgroundSrc,
-        });
+        await onCreate?.({ ...character, characterSrc, backgroundSrc });
     } else {
-        await updateCharacter({
-            ...character,
-            characterSrc,
-            backgroundSrc,
-        });
+        await onUpdate?.({ ...character, characterSrc, backgroundSrc });
     }
 };

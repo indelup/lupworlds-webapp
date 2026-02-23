@@ -36,8 +36,7 @@ const initialMaterial = {
 };
 
 export const MaterialForm = (props: MaterialFormProps) => {
-    const user = useStore((state: AppState) => state.user);
-    const activeWorldId = user?.worldIds[0] || "";
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const [saving, setSaving] = useState(false);
     const [material, setMaterial] = useState<Material>(initialMaterial);
     const [materialImage, setMaterialImage] = useState<UploadFile>();

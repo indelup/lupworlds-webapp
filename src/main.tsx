@@ -7,6 +7,9 @@ import { ModeSelection } from "./views/mode/ModeSelection.tsx";
 import { ViewerApp } from "./views/viewer/ViewerApp.tsx";
 import { StreamerApp } from "./views/streamer/StreamerApp.tsx";
 import { ConfigProvider } from "antd";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
     {
@@ -32,15 +35,17 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ConfigProvider
-        theme={{
-            token: {
-                fontFamily: '"Source Sans 3"',
-            },
-        }}
-    >
-        <React.StrictMode>
-            <RouterProvider router={router} />
-        </React.StrictMode>
-    </ConfigProvider>,
+    <QueryClientProvider client={queryClient}>
+        <ConfigProvider
+            theme={{
+                token: {
+                    fontFamily: '"Source Sans 3"',
+                },
+            }}
+        >
+            <React.StrictMode>
+                <RouterProvider router={router} />
+            </React.StrictMode>
+        </ConfigProvider>
+    </QueryClientProvider>,
 );

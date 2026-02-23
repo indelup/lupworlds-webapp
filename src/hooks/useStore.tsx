@@ -1,4 +1,4 @@
-import { User, ROLE, World, Character, Material, TwitchData } from "../types";
+import { User, ROLE, Character, Material, TwitchData } from "../types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -9,8 +9,8 @@ export interface AppState {
     setTwitchData: (data: TwitchData) => void;
     role?: ROLE;
     setRole: (role: ROLE) => void;
-    world: World;
-    setWorld: (world: World) => void;
+    activeWorldId: string;
+    setActiveWorldId: (worldId: string) => void;
     characters: Character[];
     setCharacters: (characters: Character[]) => void;
     materials: Material[];
@@ -26,12 +26,8 @@ export const useStore = create<AppState>()(
             setTwitchData: (twitchData?: TwitchData) => set({ twitchData }),
             role: undefined,
             setRole: (role: ROLE) => set({ role }),
-            world: {
-                id: "",
-                streamerIds: [],
-                maxRarity: 0,
-            },
-            setWorld: (world: World) => set({ world }),
+            activeWorldId: "",
+            setActiveWorldId: (activeWorldId: string) => set({ activeWorldId }),
             characters: [],
             setCharacters: (characters: Character[]) => set({ characters }),
             materials: [],

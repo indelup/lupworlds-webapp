@@ -10,8 +10,7 @@ import { MaterialCard } from "../../common/MaterialCard";
 import { MaterialForm } from "./MaterialForm";
 
 export const Materials = () => {
-    const user = useStore((state: AppState) => state.user);
-    const activeWorldId = user?.worldIds[0] || "";
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const [formOpen, setFormOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [materialId, setMaterialId] = useState("");

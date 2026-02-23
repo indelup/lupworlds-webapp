@@ -37,9 +37,8 @@ const initialBanner = {
 };
 
 export const BannerForm = (props: BannerFormProps) => {
-    const user = useStore((state: AppState) => state.user);
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const { open, setOpen } = props;
-    const activeWorldId = user?.worldIds[0] || "";
     const [saving, setSaving] = useState(false);
     const [banner, setBanner] = useState<Banner>(initialBanner);
     const [loadingItems, setLoadingItems] = useState(false);

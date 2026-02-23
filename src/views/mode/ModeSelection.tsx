@@ -9,6 +9,7 @@ export const ModeSelection = () => {
     const user = useStore((state: AppState) => state.user);
     const role = useStore((state: AppState) => state.role);
     const setRole = useStore((state: AppState) => state.setRole);
+    const setActiveWorldId = useStore((state: AppState) => state.setActiveWorldId);
     const navigate = useNavigate();
 
     useCheckUser();
@@ -34,6 +35,7 @@ export const ModeSelection = () => {
                 <span
                     className={classes.button}
                     onClick={() => {
+                        setActiveWorldId(user?.worldIds[0] || "");
                         setRole(ROLE.STREAMER);
                     }}
                 >

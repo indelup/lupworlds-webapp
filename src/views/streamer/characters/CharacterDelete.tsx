@@ -1,7 +1,7 @@
 import { Flex, Modal, Spin } from "antd";
-import { useState } from "react";
 import classes from "./CharacterForm.module.scss";
-import { deleteCharacter } from "../../../utils/lupworldsApi";
+import { AppState, useStore } from "../../../hooks/useStore";
+import { useCharacterClient } from "../../../hooks/useCharacterClient";
 
 type CharacterDeleteProps = {
     open: boolean;
@@ -12,18 +12,16 @@ type CharacterDeleteProps = {
 
 export const CharacterDelete = (props: CharacterDeleteProps) => {
     const { characterId } = props;
-    const [deleting, setDeleting] = useState(false);
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const { deleteCharacter, isDeleting } = useCharacterClient(activeWorldId);
 
     const onDelete = async () => {
         try {
-            setDeleting(true);
             await deleteCharacter(characterId);
             props.setOpen(false);
             props.onCharacterDeleted?.();
         } catch (error) {
             console.error("Error deleting character:", error);
-        } finally {
-            setDeleting(false);
         }
     };
 
@@ -36,18 +34,18 @@ export const CharacterDelete = (props: CharacterDeleteProps) => {
             cancelText={"Cancelar"}
             okText={"Confirmar"}
             onCancel={() => {
-                if (!deleting) props.setOpen(false);
+                if (!isDeleting) props.setOpen(false);
             }}
             onOk={onDelete}
-            okButtonProps={{ disabled: deleting, color: "danger" }}
-            cancelButtonProps={{ disabled: deleting }}
+            okButtonProps={{ disabled: isDeleting, color: "danger" }}
+            cancelButtonProps={{ disabled: isDeleting }}
         >
-            <div className={`${deleting ? classes.blurred : ""}`}>
+            <div className={`${isDeleting ? classes.blurred : ""}`}>
                 <Flex className={classes.container} justify="center" gap={24}>
                     ¿Estás seguro de querer eliminar este personaje?
                 </Flex>
             </div>
-            {deleting && (
+            {isDeleting && (
                 <div className={classes.spinner}>
                     <Spin tip="Creando Personaje" size="large" />
                 </div>

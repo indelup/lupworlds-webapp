@@ -9,8 +9,7 @@ import { AppState, useStore } from "../../../hooks/useStore";
 import { BannerForm } from "./BannerForm/BannerForm";
 
 export const Banners = () => {
-    const user = useStore((state: AppState) => state.user);
-    const activeWorldId = user?.worldIds[0] || "";
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const [formOpen, setFormOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [bannerId, setBannerId] = useState("");

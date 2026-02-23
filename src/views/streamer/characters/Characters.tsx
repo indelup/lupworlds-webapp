@@ -2,16 +2,15 @@ import { Character } from "../../../types";
 import classes from "./Characters.module.scss";
 import { Button, Flex } from "antd";
 import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CharacterForm } from "./CharacterForm";
 import { CharacterDelete } from "./CharacterDelete";
 import { CharacterCard } from "../../common/CharacterCard";
-import { getCharacters } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
+import { useCharacterClient } from "../../../hooks/useCharacterClient";
 
 export const Characters = () => {
-    const user = useStore((state: AppState) => state.user);
-    const activeWorldId = user?.worldIds[0] || "";
+    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -19,31 +18,7 @@ export const Characters = () => {
         Character | undefined
     >();
 
-    const [characters, setCharacters] = useState<Character[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchCharacters = async () => {
-            if (!activeWorldId) {
-                setCharacters([]);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                setLoading(true);
-                const fetchedCharacters = await getCharacters(activeWorldId);
-                setCharacters(fetchedCharacters);
-            } catch (error) {
-                console.error("Error fetching characters:", error);
-                setCharacters([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCharacters();
-    }, [activeWorldId]);
+    const { characters, isFetching: loading } = useCharacterClient(activeWorldId);
 
     return (
         <>
@@ -103,22 +78,7 @@ export const Characters = () => {
                     setOpen={setFormOpen}
                     mode={formMode}
                     onCharacterCreated={() => {
-                        // Refresh characters list when a new character is created
-                        const fetchCharacters = async () => {
-                            if (activeWorldId) {
-                                try {
-                                    const fetchedCharacters =
-                                        await getCharacters(activeWorldId);
-                                    setCharacters(fetchedCharacters);
-                                } catch (error) {
-                                    console.error(
-                                        "Error refreshing characters:",
-                                        error,
-                                    );
-                                }
-                            }
-                        };
-                        fetchCharacters();
+                        // React Query will automatically refetch when activeWorldId changes
                     }}
                     onClose={() => {
                         setActiveCharacter(undefined);
@@ -131,23 +91,8 @@ export const Characters = () => {
                 setOpen={setDeleteOpen}
                 characterId={activeCharacter?.id || ""}
                 onCharacterDeleted={() => {
-                    // Refresh characters list when a character is deleted
-                    const fetchCharacters = async () => {
-                        if (activeWorldId) {
-                            try {
-                                const fetchedCharacters =
-                                    await getCharacters(activeWorldId);
-                                setCharacters(fetchedCharacters);
-                                setActiveCharacter(undefined);
-                            } catch (error) {
-                                console.error(
-                                    "Error refreshing characters:",
-                                    error,
-                                );
-                            }
-                        }
-                    };
-                    fetchCharacters();
+                    // React Query will automatically refetch when activeWorldId changes
+                    setActiveCharacter(undefined);
                 }}
             />
         </>
