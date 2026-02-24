@@ -3,6 +3,13 @@
     padding-bottom: 24px;   
 }
 
+.bannerImage {
+    width: 360px;
+    height: 108px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
 .cardList {
     display: flex;
     flex-wrap: wrap;

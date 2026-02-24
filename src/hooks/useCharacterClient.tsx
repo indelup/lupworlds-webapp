@@ -37,7 +37,7 @@ export const useCharacterClient = (worldId: string) => {
     });
 
     return {
-        characters: charactersQuery.data ?? [],
+        characters: (charactersQuery.data ?? []).slice().sort((a, b) => new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime()),
         isFetching: charactersQuery.isFetching,
         fetchCharacters: charactersQuery.refetch,
         createCharacter: createMutation.mutateAsync,

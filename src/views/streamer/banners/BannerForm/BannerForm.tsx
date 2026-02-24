@@ -1,21 +1,20 @@
 import { Button, Flex, Upload, UploadFile, Spin, Drawer } from "antd";
-import { PlusCircleOutlined, UploadOutlined } from "@ant-design/icons";
-import { Banner, BannerBag, Character, Material } from "../../../../types";
+import { PlusCircleOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import { Banner, BannerBag } from "../../../../types";
 import { useEffect, useState } from "react";
 import classes from "./BannerForm.module.scss";
 import { AppState, useStore } from "../../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
-import {
-    createBanner,
-    getCharacters,
-    getMaterials,
-    uploadImage,
-} from "../../../../utils/lupworldsApi";
+import { uploadImage } from "../../../../utils/lupworldsApi";
+import { useBannerClient } from "../../../../hooks/useBannerClient";
+import { useCharacterClient } from "../../../../hooks/useCharacterClient";
+import { useMaterialClient } from "../../../../hooks/useMaterialClient";
 import { v4 as uuidv4 } from "uuid";
 import { BannerBagForm } from "./BannerBagForm";
 
 type BannerFormProps = {
-    bannerId?: string;
+    mode: "create" | "edit";
+    existingBanner?: Banner;
     open: boolean;
     setOpen: (open: boolean) => void;
     onBannerCreated?: () => void;
@@ -38,14 +37,31 @@ const initialBanner = {
 
 export const BannerForm = (props: BannerFormProps) => {
     const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { open, setOpen } = props;
+    const { mode, existingBanner, open, setOpen } = props;
+    const bannerClient = useBannerClient(activeWorldId ?? "");
+    const { characters } = useCharacterClient(activeWorldId ?? "");
+    const { materials } = useMaterialClient(activeWorldId ?? "");
     const [saving, setSaving] = useState(false);
     const [banner, setBanner] = useState<Banner>(initialBanner);
-    const [loadingItems, setLoadingItems] = useState(false);
-    const [characters, setCharacters] = useState<Character[]>([]);
-    const [materials, setMaterials] = useState<Material[]>([]);
     const [usedItems, setUsedItems] = useState<string[]>([]);
     const [bannerImage, setBannerImage] = useState<UploadFile>();
+
+    useEffect(() => {
+        if (open) {
+            if (existingBanner) {
+                setBanner(existingBanner);
+                setUsedItems(
+                    existingBanner.bags.flatMap((bag) =>
+                        bag.items.map((item) => item.itemId),
+                    ),
+                );
+            } else {
+                setBanner(initialBanner);
+                setUsedItems([]);
+            }
+            setBannerImage(undefined);
+        }
+    }, [open]);
 
     // Transform received file to base64 so it can be shown in Preview
     const setFile = async (
@@ -108,7 +124,7 @@ export const BannerForm = (props: BannerFormProps) => {
 
         updatedBanner.bags[bagIndex] = updatedBag;
         setBanner(updatedBanner);
-        const newUsedItems = usedItems.filter((itemId) => itemId !== itemId);
+        const newUsedItems = usedItems.filter((id) => id !== itemId);
         setUsedItems(newUsedItems);
     };
 
@@ -146,11 +162,15 @@ export const BannerForm = (props: BannerFormProps) => {
     const onSave = async () => {
         try {
             setSaving(true);
-            const finalBanner = { ...banner, worldId: activeWorldId };
-            await saveBanner(finalBanner, bannerImage);
-
+            await saveBanner(
+                { ...banner, worldId: activeWorldId ?? "" },
+                mode,
+                bannerImage,
+                bannerClient.createBanner,
+                bannerClient.updateBanner,
+            );
             props.onBannerCreated?.();
-            // TODO: Close the form
+            setOpen(false);
         } catch (error) {
             console.error("Error saving banner:", error);
         } finally {
@@ -158,31 +178,6 @@ export const BannerForm = (props: BannerFormProps) => {
         }
     };
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            setLoadingItems(true);
-            if (!activeWorldId) {
-                setCharacters([]);
-                setMaterials([]);
-                setLoadingItems(false);
-                return;
-            }
-
-            try {
-                const fetchedCharacters = await getCharacters(activeWorldId);
-                const fetchedMaterials = await getMaterials(activeWorldId);
-                setCharacters(fetchedCharacters);
-                setMaterials(fetchedMaterials);
-            } catch (error) {
-                console.error("Error fetching items::", error);
-                setCharacters([]);
-            } finally {
-                setLoadingItems(false);
-            }
-        };
-
-        fetchItems();
-    }, [activeWorldId]);
 
     const characterOptions = characters
         .map((character) => {
@@ -210,8 +205,19 @@ export const BannerForm = (props: BannerFormProps) => {
             open={open}
             onClose={() => setOpen(false)}
             getContainer={false}
-            size="large"
-            title="Nuevo Banner"
+            width="100%"
+            title={mode === "edit" ? "Editar Banner" : "Nuevo Banner"}
+            extra={
+                <Button
+                    color="primary"
+                    variant="solid"
+                    onClick={onSave}
+                    disabled={saving}
+                    icon={<SaveOutlined />}
+                >
+                    Guardar
+                </Button>
+            }
         >
             <div className={`${saving ? classes.blurred : ""}`}>
                 <Flex className={classes.container} gap={24}>
@@ -272,17 +278,22 @@ export const BannerForm = (props: BannerFormProps) => {
     );
 };
 
-const saveBanner = async (banner: Banner, bannerImage?: UploadFile) => {
+const saveBanner = async (
+    banner: Banner,
+    mode: "create" | "edit",
+    bannerImage?: UploadFile,
+    onCreate?: (b: Omit<Banner, "id">) => Promise<Banner>,
+    onUpdate?: (b: Banner) => Promise<Banner>,
+) => {
     let imageSrc = banner.imageSrc;
 
-    // Upload banner image if provided
     if (bannerImage) {
         imageSrc = await uploadImage(bannerImage, "banners");
     }
 
-    // Create the banner with the uploaded image URLs
-    await createBanner({
-        ...banner,
-        imageSrc,
-    });
+    if (mode === "create") {
+        await onCreate?.({ ...banner, imageSrc });
+    } else {
+        await onUpdate?.({ ...banner, imageSrc });
+    }
 };

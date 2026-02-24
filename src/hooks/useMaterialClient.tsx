@@ -31,7 +31,7 @@ export const useMaterialClient = (worldId: string) => {
     });
 
     return {
-        materials: materialsQuery.data ?? [],
+        materials: (materialsQuery.data ?? []).slice().sort((a, b) => new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime()),
         isFetching: materialsQuery.isFetching,
         fetchMaterials: materialsQuery.refetch,
         createMaterial: createMutation.mutateAsync,

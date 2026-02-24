@@ -49,6 +49,7 @@ export interface Character {
     characterSrc: string;
     backgroundSrc: string;
     rarity: number;
+    createdAt?: string;
 }
 
 export interface Material {
@@ -60,6 +61,7 @@ export interface Material {
     materialSrc: string;
     backgroundSrc: string;
     rarity: number;
+    createdAt?: string;
 }
 
 export interface Banner {
@@ -67,6 +69,7 @@ export interface Banner {
     worldId: string;
     imageSrc: string;
     bags: BannerBag[];
+    createdAt?: string;
 }
 
 export interface BannerBag {

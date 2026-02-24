@@ -139,9 +139,17 @@ export const getBanners = async (worldId: string): Promise<Banner[]> => {
 
 export const createBanner = async (
     banner: Omit<Banner, "id">,
-): Promise<Material> => {
+): Promise<Banner> => {
     const response = await axios.post(
         `${env.VITE_LUPWORLDS_API_URI}/banners`,
+        banner,
+    );
+    return response.data;
+};
+
+export const updateBanner = async (banner: Banner): Promise<Banner> => {
+    const response = await axios.put(
+        `${env.VITE_LUPWORLDS_API_URI}/banners/${banner.id}`,
         banner,
     );
     return response.data;

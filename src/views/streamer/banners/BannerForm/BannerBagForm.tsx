@@ -3,6 +3,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { BannerBag, Character, Material } from "../../../../types";
 import classes from "./BannerForm.module.scss";
 import { CharacterCard } from "../../../common/CharacterCard";
+import { MaterialCard } from "../../../common/MaterialCard";
 
 type BannerBagFormProps = {
     bag: BannerBag;
@@ -50,6 +51,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         addItemToBag(bagIndex, v, "material");
                     }}
                     options={materialsOptions as any}
+                    value="Añadir Material"
                 />
                 <Input placeholder="Probabilidad" />
                 <Button
@@ -79,6 +81,34 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                                         onClick={() => {
                                             removeItemFromBag(
                                                 character.id,
+                                                bagIndex,
+                                            );
+                                        }}
+                                        icon={<DeleteOutlined />}
+                                        color="danger"
+                                    >
+                                        Eliminar
+                                    </Button>
+                                </div>
+                            );
+                        }
+                    }
+                })}
+                {materials.map((material) => {
+                    for (const item of bag.items) {
+                        if (
+                            item.type === "material" &&
+                            item.itemId === material.id
+                        ) {
+                            return (
+                                <div className={classes.bagItem}>
+                                    <MaterialCard material={material} />
+                                    <Button
+                                        size="large"
+                                        variant="solid"
+                                        onClick={() => {
+                                            removeItemFromBag(
+                                                material.id,
                                                 bagIndex,
                                             );
                                         }}

@@ -24,9 +24,8 @@
 }
 
 .bagItemList {
-    width: 200%;
-    transform-origin: 0% 0%;
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
 }
 

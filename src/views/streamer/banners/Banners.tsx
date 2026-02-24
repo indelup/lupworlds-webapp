@@ -1,43 +1,23 @@
-import { Banner } from "../../../types";
 import classes from "./Banners.module.scss";
 import { Button, Flex } from "antd";
 import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BannerDelete } from "./BannerDelete";
-import { getBanners } from "../../../utils";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { BannerForm } from "./BannerForm/BannerForm";
+import { useBannerClient } from "../../../hooks/useBannerClient";
+import { Banner } from "../../../types";
+import env from "../../../env";
+import { isBase64 } from "../../../utils/imageHelpers";
 
 export const Banners = () => {
     const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const { banners, isFetching, fetchBanners } = useBannerClient(activeWorldId ?? "");
     const [formOpen, setFormOpen] = useState(false);
+    const [formMode, setFormMode] = useState<"create" | "edit">("create");
+    const [activeBanner, setActiveBanner] = useState<Banner>();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [bannerId, setBannerId] = useState("");
-    const [banners, setBanners] = useState<Banner[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchBanners = async () => {
-            if (!activeWorldId) {
-                setBanners([]);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                setLoading(true);
-                const fetchedBanners = await getBanners(activeWorldId);
-                setBanners(fetchedBanners);
-            } catch (error) {
-                console.error("Error fetching banners:", error);
-                setBanners([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBanners();
-    }, [activeWorldId]);
 
     return (
         <>
@@ -47,6 +27,8 @@ export const Banners = () => {
                     color="cyan"
                     variant="solid"
                     onClick={() => {
+                        setActiveBanner(undefined);
+                        setFormMode("create");
                         setFormOpen(true);
                     }}
                 >
@@ -54,20 +36,30 @@ export const Banners = () => {
                 </Button>
             </div>
             <div className={classes.cardList}>
-                {loading ? (
+                {isFetching ? (
                     <div>Loading banners...</div>
                 ) : banners.length === 0 ? (
                     <div>No banners found for this world.</div>
                 ) : (
                     banners.map((banner) => {
+                        const imageSrc = !banner.imageSrc
+                            ? ""
+                            : isBase64(banner.imageSrc)
+                              ? banner.imageSrc
+                              : `${env.VITE_BANNER_BUCKET_URI}/${banner.imageSrc}`;
                         return (
                             <Flex gap={8} vertical>
-                                {banner.id}
+                                <img src={imageSrc} className={classes.bannerImage} />
                                 <Flex gap={4} justify="end" className="mt-4">
                                     <Button
                                         type="primary"
                                         shape="circle"
                                         icon={<EditFilled />}
+                                        onClick={() => {
+                                            setActiveBanner(banner);
+                                            setFormMode("edit");
+                                            setFormOpen(true);
+                                        }}
                                     />
                                     <Button
                                         type="primary"
@@ -85,29 +77,19 @@ export const Banners = () => {
                     })
                 )}
             </div>
-            <BannerForm open={formOpen} setOpen={setFormOpen} />
+            <BannerForm
+                open={formOpen}
+                setOpen={setFormOpen}
+                mode={formMode}
+                existingBanner={activeBanner}
+            />
             <BannerDelete
                 open={deleteOpen}
                 setOpen={setDeleteOpen}
                 bannerId={bannerId}
                 onBannerDeleted={() => {
-                    // Refresh banner list when a banner is deleted
-                    const fetchBanners = async () => {
-                        if (activeWorldId) {
-                            try {
-                                const fetchedBanners =
-                                    await getBanners(activeWorldId);
-                                setBanners(fetchedBanners);
-                                setBannerId("");
-                            } catch (error) {
-                                console.error(
-                                    "Error refreshing banners:",
-                                    error,
-                                );
-                            }
-                        }
-                    };
                     fetchBanners();
+                    setBannerId("");
                 }}
             />
         </>
