@@ -1,6 +1,6 @@
 import { Button, Flex, Upload, UploadFile, Spin, Drawer } from "antd";
 import { PlusCircleOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
-import { Banner, BannerBag } from "../../../../types";
+import { Banner, BannerBag } from "@melda/lupworlds-types";
 import { useEffect, useState } from "react";
 import classes from "./BannerForm.module.scss";
 import { AppState, useStore } from "../../../../hooks/useStore";

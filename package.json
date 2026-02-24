@@ -27,6 +27,7 @@
         "build-nolog": "vite build --config vite/config.prod.mjs"
     },
     "dependencies": {
+        "@melda/lupworlds-types": "^0.1.1",
         "@tanstack/react-query": "^5.90.21",
         "antd": "^5.24.9",
         "axios": "^1.8.4",

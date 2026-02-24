@@ -1,4 +1,4 @@
-import { Character } from "../../../types";
+import { Character } from "@melda/lupworlds-types";
 import classes from "./Characters.module.scss";
 import { Button, Flex } from "antd";
 import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";

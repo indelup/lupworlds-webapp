@@ -1,4 +1,4 @@
-import { ROLE } from "../../types";
+import { ROLE } from "@melda/lupworlds-types";
 import classes from "./ModeSelection.module.scss";
 import { useStore, AppState } from "../../hooks/useStore";
 import { useEffect } from "react";

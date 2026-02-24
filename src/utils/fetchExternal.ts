@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { TwitchData } from "../types";
+import { TwitchData } from "@melda/lupworlds-types";
 
 export const fetchTwitchData = async (token: string): Promise<TwitchData> => {
     const response = await axios.get("https://api.twitch.tv/helix/users", {

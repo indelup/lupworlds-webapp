@@ -1,4 +1,4 @@
-import { User, ROLE, Character, Material, TwitchData } from "../types";
+import { User, ROLE, Character, Material, TwitchData } from "@melda/lupworlds-types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

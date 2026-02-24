@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Banner } from "../types";
+import { Banner } from "@melda/lupworlds-types";
 import { getBanners, createBanner, updateBanner, deleteBanner } from "../utils";
 
 export const useBannerClient = (worldId: string) => {

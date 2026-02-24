@@ -10,7 +10,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { MaterialCard } from "../../common/MaterialCard";
-import { Material } from "../../../types";
+import { Material } from "@melda/lupworlds-types";
 import { useState } from "react";
 import classes from "./MaterialForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";

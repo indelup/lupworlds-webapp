@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Material } from "../types";
+import { Material } from "@melda/lupworlds-types";
 import { getMaterials, createMaterial, updateMaterial, deleteMaterial } from "../utils";
 
 export const useMaterialClient = (worldId: string) => {

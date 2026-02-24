@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User, Character, Material, Banner } from "../types";
+import { ROLE, TwitchData, User, Character, Material, Banner } from "@melda/lupworlds-types";
 import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (

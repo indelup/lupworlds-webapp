@@ -1,4 +1,4 @@
-import { Material } from "../../../types";
+import { Material } from "@melda/lupworlds-types";
 import classes from "./Materials.module.scss";
 import { Button, Flex } from "antd";
 import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";

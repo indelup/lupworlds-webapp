@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Character } from "../types";
+import { Character } from "@melda/lupworlds-types";
 import {
     getCharacters,
     createCharacter,

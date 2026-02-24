@@ -1,6 +1,6 @@
 import classes from "./Card.module.scss";
 import Tilt from "react-parallax-tilt";
-import { Material } from "../../types";
+import { Material } from "@melda/lupworlds-types";
 import { Rate } from "antd";
 import env from "../../env";
 import { isBase64 } from "../../utils/imageHelpers";

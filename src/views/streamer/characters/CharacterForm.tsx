@@ -10,7 +10,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { CharacterCard } from "../../common/CharacterCard";
-import { Character } from "../../../types";
+import { Character } from "@melda/lupworlds-types";
 import { useState } from "react";
 import classes from "./CharacterForm.module.scss";
 import { AppState, useStore } from "../../../hooks/useStore";

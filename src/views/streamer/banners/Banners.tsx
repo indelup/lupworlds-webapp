@@ -6,7 +6,7 @@ import { BannerDelete } from "./BannerDelete";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { BannerForm } from "./BannerForm/BannerForm";
 import { useBannerClient } from "../../../hooks/useBannerClient";
-import { Banner } from "../../../types";
+import { Banner } from "@melda/lupworlds-types";
 import env from "../../../env";
 import { isBase64 } from "../../../utils/imageHelpers";
 

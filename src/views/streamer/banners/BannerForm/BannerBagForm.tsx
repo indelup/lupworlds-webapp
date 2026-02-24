@@ -1,6 +1,6 @@
 import { Button, Select, Input } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { BannerBag, Character, Material } from "../../../../types";
+import { BannerBag, Character, Material } from "@melda/lupworlds-types";
 import classes from "./BannerForm.module.scss";
 import { CharacterCard } from "../../../common/CharacterCard";
 import { MaterialCard } from "../../../common/MaterialCard";
