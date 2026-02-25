@@ -140,6 +140,12 @@ export const BannerForm = (props: BannerFormProps) => {
         });
     };
 
+    const updateBagChance = (bagIndex: number, chance: number) => {
+        const updatedBags = [...banner.bags];
+        updatedBags[bagIndex] = { ...updatedBags[bagIndex], chance };
+        setBanner({ ...banner, bags: updatedBags });
+    };
+
     const removeBagFromBanner = (bagIndex: number) => {
         const updatedBags = [...banner.bags];
         const bag = banner.bags[bagIndex];
@@ -253,6 +259,7 @@ export const BannerForm = (props: BannerFormProps) => {
                                     removeBagFromBanner={removeBagFromBanner}
                                     addItemToBag={addItemToBag}
                                     removeItemFromBag={removeItemFromBag}
+                                    updateBagChance={updateBagChance}
                                     characters={characters}
                                     characterOptions={characterOptions as any}
                                     materials={materials}

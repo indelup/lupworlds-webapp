@@ -15,6 +15,7 @@ type BannerBagFormProps = {
         type: "character" | "material",
     ) => void;
     removeItemFromBag: (itemId: string, bagIndex: number) => void;
+    updateBagChance: (bagIndex: number, chance: number) => void;
     characterOptions: { value: string; label: string }[];
     materialsOptions: { value: string; label: string }[];
     characters: Character[];
@@ -28,6 +29,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
         removeBagFromBanner,
         addItemToBag,
         removeItemFromBag,
+        updateBagChance,
         characters,
         characterOptions,
         materials,
@@ -53,7 +55,15 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                     options={materialsOptions as any}
                     value="Añadir Material"
                 />
-                <Input placeholder="Probabilidad" />
+                <Input
+                    placeholder="Probabilidad"
+                    type="number"
+                    min={0}
+                    value={bag.chance}
+                    onChange={(e) =>
+                        updateBagChance(bagIndex, Number(e.target.value))
+                    }
+                />
                 <Button
                     color="danger"
                     variant="solid"
