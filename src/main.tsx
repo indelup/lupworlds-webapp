@@ -6,6 +6,7 @@ import { Login } from "./views/login/Login.tsx";
 import { ModeSelection } from "./views/mode/ModeSelection.tsx";
 import { ViewerApp } from "./views/viewer/ViewerApp.tsx";
 import { StreamerApp } from "./views/streamer/StreamerApp.tsx";
+import { Overlay } from "./views/overlay/Overlay.tsx";
 import { ConfigProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     {
         path: "/streamer",
         element: <StreamerApp />,
+    },
+    {
+        path: "/overlay",
+        element: <Overlay />,
     },
 ]);
 

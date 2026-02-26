@@ -1,0 +1,37 @@
+.container {
+    position: fixed;
+    bottom: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hidden {
+    transform: translateY(80px);
+    opacity: 0;
+}
+
+.viewerName {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+}
