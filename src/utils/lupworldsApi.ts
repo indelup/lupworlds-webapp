@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User, Character, Material, Banner } from "@melda/lupworlds-types";
+import { ROLE, TwitchData, User, Character, Material, Banner, World } from "@melda/lupworlds-types";
 import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (
@@ -57,6 +57,22 @@ export const uploadImage = async (image: UploadFile, bucketType: string) => {
     });
 
     return key;
+};
+
+// WORLDS
+export const getWorld = async (worldId: string): Promise<World> => {
+    const response = await axios.get(
+        `${env.VITE_LUPWORLDS_API_URI}/worlds/${worldId}`,
+    );
+    return response.data;
+};
+
+export const updateWorld = async (world: World): Promise<World> => {
+    const response = await axios.put(
+        `${env.VITE_LUPWORLDS_API_URI}/worlds/${world.id}`,
+        world,
+    );
+    return response.data;
 };
 
 // CHARACTERS

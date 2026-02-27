@@ -5,6 +5,7 @@ import { Characters } from "./characters/Characters";
 import { Materials } from "./materials/Materials";
 import { Banners } from "./banners/Banners";
 import { Stores } from "./stores/Stores";
+import { WorldConfig } from "./worldConfig/WorldConfig";
 import classes from "./StreamerApp.module.scss";
 
 import type { MenuProps } from "antd";
@@ -97,7 +98,7 @@ export const StreamerApp = () => {
 
 const getActiveView = (view: string) => {
     switch (view) {
-        case "charaters":
+        case "characters":
             return Characters;
         case "materials":
             return Materials;
@@ -105,6 +106,8 @@ const getActiveView = (view: string) => {
             return Banners;
         case "stores":
             return Stores;
+        case "world":
+            return WorldConfig;
         default:
             return Characters;
     }
