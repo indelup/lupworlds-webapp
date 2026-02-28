@@ -11,8 +11,8 @@ import env from "../../../env";
 import { isBase64 } from "../../../utils/imageHelpers";
 
 export const Banners = () => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { banners, isFetching, fetchBanners } = useBannerClient(activeWorldId ?? "");
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const { banners, isFetching, fetchBanners } = useBannerClient(activeWorld?.id ?? "");
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [activeBanner, setActiveBanner] = useState<Banner>();

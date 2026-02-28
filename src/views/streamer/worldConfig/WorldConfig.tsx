@@ -1,5 +1,5 @@
 import { Button, Flex, Input, Spin, Typography, Upload, UploadFile } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import { World } from "@melda/lupworlds-types";
 import { useEffect, useState } from "react";
 import { UploadChangeParam } from "antd/es/upload";
@@ -19,9 +19,10 @@ const toDisplayUrl = (src: string | undefined): string | undefined => {
 };
 
 export const WorldConfig = () => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const setActiveWorld = useStore((state: AppState) => state.setActiveWorld);
     const { world, isFetching, updateWorld, isUpdating } =
-        useWorldClient(activeWorldId);
+        useWorldClient(activeWorld?.id ?? "");
 
     const [draft, setDraft] = useState<Partial<World>>({});
     const [logoFile, setLogoFile] = useState<UploadFile>();
@@ -46,7 +47,7 @@ export const WorldConfig = () => {
     };
 
     const onSave = async () => {
-        if (!activeWorldId) return;
+        if (!activeWorld) return;
         try {
             setSaving(true);
 
@@ -61,15 +62,17 @@ export const WorldConfig = () => {
             }
 
             const worldToSave: World = {
-                id: activeWorldId,
+                id: activeWorld.id,
                 name: draft.name ?? "",
                 streamerIds: draft.streamerIds ?? [],
                 maxRarity: draft.maxRarity ?? 5,
                 logoSrc,
                 backgroundSrc,
+                redeems: draft.redeems,
             };
 
             await updateWorld(worldToSave);
+            setActiveWorld(worldToSave);
             setLogoFile(undefined);
             setBackgroundFile(undefined);
         } catch (error) {
@@ -79,7 +82,7 @@ export const WorldConfig = () => {
         }
     };
 
-    if (!activeWorldId) {
+    if (!activeWorld) {
         return <Text>No active world selected.</Text>;
     }
 
@@ -157,6 +160,7 @@ export const WorldConfig = () => {
                 onClick={onSave}
                 loading={saving || isUpdating}
                 disabled={!draft.name}
+                icon={<SaveOutlined />}
             >
                 Save
             </Button>

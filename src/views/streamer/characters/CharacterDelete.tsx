@@ -12,8 +12,8 @@ type CharacterDeleteProps = {
 
 export const CharacterDelete = (props: CharacterDeleteProps) => {
     const { characterId } = props;
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { deleteCharacter, isDeleting } = useCharacterClient(activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const { deleteCharacter, isDeleting } = useCharacterClient(activeWorld?.id ?? "");
 
     const onDelete = async () => {
         try {

@@ -1,4 +1,4 @@
-import { User, ROLE, Character, Material, TwitchData } from "@melda/lupworlds-types";
+import { User, ROLE, Character, Material, TwitchData, World } from "@melda/lupworlds-types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -9,8 +9,8 @@ export interface AppState {
     setTwitchData: (data: TwitchData) => void;
     role?: ROLE;
     setRole: (role: ROLE) => void;
-    activeWorldId: string;
-    setActiveWorldId: (worldId: string) => void;
+    activeWorld: World | undefined;
+    setActiveWorld: (world: World | undefined) => void;
     characters: Character[];
     setCharacters: (characters: Character[]) => void;
     materials: Material[];
@@ -26,8 +26,8 @@ export const useStore = create<AppState>()(
             setTwitchData: (twitchData?: TwitchData) => set({ twitchData }),
             role: undefined,
             setRole: (role: ROLE) => set({ role }),
-            activeWorldId: "",
-            setActiveWorldId: (activeWorldId: string) => set({ activeWorldId }),
+            activeWorld: undefined,
+            setActiveWorld: (activeWorld: World | undefined) => set({ activeWorld }),
             characters: [],
             setCharacters: (characters: Character[]) => set({ characters }),
             materials: [],

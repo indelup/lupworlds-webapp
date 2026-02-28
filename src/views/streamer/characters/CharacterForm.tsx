@@ -47,8 +47,8 @@ export const CharacterForm = ({
     onClose,
     existingCharacter,
 }: CharacterFormProps) => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { createCharacter, updateCharacter } = useCharacterClient(activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const { createCharacter, updateCharacter } = useCharacterClient(activeWorld?.id ?? "");
     const [saving, setSaving] = useState(false);
     const [character, setCharacter] = useState<Character>(
         existingCharacter ? existingCharacter : initialCharacter,
@@ -115,7 +115,7 @@ export const CharacterForm = ({
         try {
             if (validate()) {
                 setSaving(true);
-                const finalCharacter = { ...character, worldId: activeWorldId };
+                const finalCharacter = { ...character, worldId: activeWorld?.id ?? "" };
                 await saveCharacter(
                     finalCharacter,
                     mode,

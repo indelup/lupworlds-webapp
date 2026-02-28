@@ -6,6 +6,7 @@ import { Materials } from "./materials/Materials";
 import { Banners } from "./banners/Banners";
 import { Stores } from "./stores/Stores";
 import { WorldConfig } from "./worldConfig/WorldConfig";
+import { TwitchConfig } from "./twitchConfig/TwitchConfig";
 import classes from "./StreamerApp.module.scss";
 
 import type { MenuProps } from "antd";
@@ -108,6 +109,8 @@ const getActiveView = (view: string) => {
             return Stores;
         case "world":
             return WorldConfig;
+        case "twitch":
+            return TwitchConfig;
         default:
             return Characters;
     }

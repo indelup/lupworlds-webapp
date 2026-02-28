@@ -12,8 +12,8 @@ type MaterialDeleteProps = {
 
 export const MaterialDelete = (props: MaterialDeleteProps) => {
     const { materialId } = props;
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { deleteMaterial, isDeleting } = useMaterialClient(activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const { deleteMaterial, isDeleting } = useMaterialClient(activeWorld?.id ?? "");
 
     const onDelete = async () => {
         try {

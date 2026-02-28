@@ -47,8 +47,8 @@ export const MaterialForm = ({
     onClose,
     existingMaterial,
 }: MaterialFormProps) => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
-    const { createMaterial, updateMaterial } = useMaterialClient(activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
+    const { createMaterial, updateMaterial } = useMaterialClient(activeWorld?.id ?? "");
     const [saving, setSaving] = useState(false);
     const [material, setMaterial] = useState<Material>(
         existingMaterial ? existingMaterial : initialMaterial,
@@ -115,7 +115,7 @@ export const MaterialForm = ({
         try {
             if (validate()) {
                 setSaving(true);
-                const finalMaterial = { ...material, worldId: activeWorldId };
+                const finalMaterial = { ...material, worldId: activeWorld?.id ?? "" };
                 await saveMaterial(
                     finalMaterial,
                     mode,

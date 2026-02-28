@@ -10,7 +10,7 @@ import { MaterialForm } from "./MaterialForm";
 import { useMaterialClient } from "../../../hooks/useMaterialClient";
 
 export const Materials = () => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -18,7 +18,7 @@ export const Materials = () => {
         Material | undefined
     >();
 
-    const { materials, isFetching: loading } = useMaterialClient(activeWorldId);
+    const { materials, isFetching: loading } = useMaterialClient(activeWorld?.id ?? "");
 
     return (
         <>

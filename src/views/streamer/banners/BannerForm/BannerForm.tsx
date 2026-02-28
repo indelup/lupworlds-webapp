@@ -36,11 +36,11 @@ const initialBanner = {
 };
 
 export const BannerForm = (props: BannerFormProps) => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
     const { mode, existingBanner, open, setOpen } = props;
-    const bannerClient = useBannerClient(activeWorldId ?? "");
-    const { characters } = useCharacterClient(activeWorldId ?? "");
-    const { materials } = useMaterialClient(activeWorldId ?? "");
+    const bannerClient = useBannerClient(activeWorld?.id ?? "");
+    const { characters } = useCharacterClient(activeWorld?.id ?? "");
+    const { materials } = useMaterialClient(activeWorld?.id ?? "");
     const [saving, setSaving] = useState(false);
     const [banner, setBanner] = useState<Banner>(initialBanner);
     const [usedItems, setUsedItems] = useState<string[]>([]);
@@ -169,7 +169,7 @@ export const BannerForm = (props: BannerFormProps) => {
         try {
             setSaving(true);
             await saveBanner(
-                { ...banner, worldId: activeWorldId ?? "" },
+                { ...banner, worldId: activeWorld?.id ?? "" },
                 mode,
                 bannerImage,
                 bannerClient.createBanner,

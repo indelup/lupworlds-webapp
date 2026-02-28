@@ -10,7 +10,7 @@ import { AppState, useStore } from "../../../hooks/useStore";
 import { useCharacterClient } from "../../../hooks/useCharacterClient";
 
 export const Characters = () => {
-    const activeWorldId = useStore((state: AppState) => state.activeWorldId);
+    const activeWorld = useStore((state: AppState) => state.activeWorld);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState<"create" | "edit">("create");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -18,7 +18,7 @@ export const Characters = () => {
         Character | undefined
     >();
 
-    const { characters, isFetching: loading } = useCharacterClient(activeWorldId);
+    const { characters, isFetching: loading } = useCharacterClient(activeWorld?.id ?? "");
 
     return (
         <>
@@ -78,9 +78,7 @@ export const Characters = () => {
                     open={formOpen}
                     setOpen={setFormOpen}
                     mode={formMode}
-                    onCharacterCreated={() => {
-                        // React Query will automatically refetch when activeWorldId changes
-                    }}
+                    onCharacterCreated={() => {}}
                     onClose={() => {
                         setActiveCharacter(undefined);
                     }}
@@ -92,7 +90,6 @@ export const Characters = () => {
                 setOpen={setDeleteOpen}
                 characterId={activeCharacter?.id || ""}
                 onCharacterDeleted={() => {
-                    // React Query will automatically refetch when activeWorldId changes
                     setActiveCharacter(undefined);
                 }}
             />

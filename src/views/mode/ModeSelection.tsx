@@ -4,13 +4,16 @@ import { useStore, AppState } from "../../hooks/useStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useCheckUser } from "../../hooks/useCheckUser";
+import { useWorldClient } from "../../hooks/useWorldClient";
 
 export const ModeSelection = () => {
     const user = useStore((state: AppState) => state.user);
     const role = useStore((state: AppState) => state.role);
     const setRole = useStore((state: AppState) => state.setRole);
-    const setActiveWorldId = useStore((state: AppState) => state.setActiveWorldId);
+    const setActiveWorld = useStore((state: AppState) => state.setActiveWorld);
     const navigate = useNavigate();
+
+    const { world } = useWorldClient(user?.worldIds[0] ?? "");
 
     useCheckUser();
 
@@ -35,7 +38,7 @@ export const ModeSelection = () => {
                 <span
                     className={classes.button}
                     onClick={() => {
-                        setActiveWorldId(user?.worldIds[0] || "");
+                        if (world) setActiveWorld(world);
                         setRole(ROLE.STREAMER);
                     }}
                 >
