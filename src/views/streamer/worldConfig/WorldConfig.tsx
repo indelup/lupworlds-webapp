@@ -1,5 +1,5 @@
 import { Button, Flex, Input, Spin, Typography, Upload, UploadFile } from "antd";
-import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import { SaveOutlined, StarFilled, UploadOutlined } from "@ant-design/icons";
 import { World } from "@melda/lupworlds-types";
 import { useEffect, useState } from "react";
 import { UploadChangeParam } from "antd/es/upload";
@@ -11,6 +11,8 @@ import env from "../../../env";
 import classes from "./WorldConfig.module.scss";
 
 const { Title, Text } = Typography;
+
+const RARITIES = [1, 2, 3, 4, 5] as const;
 
 const toDisplayUrl = (src: string | undefined): string | undefined => {
     if (!src) return undefined;
@@ -27,6 +29,10 @@ export const WorldConfig = () => {
     const [draft, setDraft] = useState<Partial<World>>({});
     const [logoFile, setLogoFile] = useState<UploadFile>();
     const [backgroundFile, setBackgroundFile] = useState<UploadFile>();
+    // Index 0 = rarity 1, index 4 = rarity 5
+    const [cardBackFiles, setCardBackFiles] = useState<(UploadFile | undefined)[]>(
+        Array(5).fill(undefined),
+    );
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -46,6 +52,21 @@ export const WorldConfig = () => {
         callback(file);
     };
 
+    const setCardBackFile = async (
+        info: UploadChangeParam<UploadFile>,
+        rarityIndex: number,
+    ) => {
+        const file = info.file;
+        if (file.status !== "removed" && !file.url && !file.preview) {
+            file.preview = await getBase64(file);
+        }
+        setCardBackFiles((prev) => {
+            const next = [...prev];
+            next[rarityIndex] = file.status === "removed" ? undefined : file;
+            return next;
+        });
+    };
+
     const onSave = async () => {
         if (!activeWorld) return;
         try {
@@ -61,6 +82,15 @@ export const WorldConfig = () => {
                 backgroundSrc = await uploadImage(backgroundFile, "worlds");
             }
 
+            // Merge existing cardBacks with any newly uploaded files
+            const cardBacks: { [rarity: number]: string } = { ...(draft.cardBacks ?? {}) };
+            for (const rarity of RARITIES) {
+                const file = cardBackFiles[rarity - 1];
+                if (file) {
+                    cardBacks[rarity] = await uploadImage(file, "worlds");
+                }
+            }
+
             const worldToSave: World = {
                 id: activeWorld.id,
                 name: draft.name ?? "",
@@ -69,12 +99,14 @@ export const WorldConfig = () => {
                 logoSrc,
                 backgroundSrc,
                 redeems: draft.redeems,
+                cardBacks: Object.keys(cardBacks).length > 0 ? cardBacks : undefined,
             };
 
             await updateWorld(worldToSave);
             setActiveWorld(worldToSave);
             setLogoFile(undefined);
             setBackgroundFile(undefined);
+            setCardBackFiles(Array(5).fill(undefined));
         } catch (error) {
             console.error("Error saving world:", error);
         } finally {
@@ -112,12 +144,14 @@ export const WorldConfig = () => {
             <div className={classes.imageRow}>
                 <div className={classes.imageField}>
                     <Text strong>Logo</Text>
-                    {logoDisplayUrl && (
+                    {logoDisplayUrl ? (
                         <img
                             className={classes.logoPreview}
                             src={logoDisplayUrl}
                             alt="World logo"
                         />
+                    ) : (
+                        <div className={classes.logoPlaceholder} />
                     )}
                     <Upload
                         beforeUpload={() => false}
@@ -134,12 +168,14 @@ export const WorldConfig = () => {
 
                 <div className={classes.imageField}>
                     <Text strong>Background</Text>
-                    {backgroundDisplayUrl && (
+                    {backgroundDisplayUrl ? (
                         <img
                             className={classes.preview}
                             src={backgroundDisplayUrl}
                             alt="World background"
                         />
+                    ) : (
+                        <div className={classes.backgroundPlaceholder} />
                     )}
                     <Upload
                         beforeUpload={() => false}
@@ -154,6 +190,47 @@ export const WorldConfig = () => {
                     </Upload>
                 </div>
             </div>
+
+            <Flex vertical gap={8}>
+                <Text strong>Card Backs</Text>
+                <div className={classes.cardBacksRow}>
+                    {RARITIES.map((rarity) => {
+                        const file = cardBackFiles[rarity - 1];
+                        const existingKey = draft.cardBacks?.[rarity];
+                        const displayUrl = file
+                            ? (file.preview as string) || file.url
+                            : toDisplayUrl(existingKey);
+                        return (
+                            <div key={rarity} className={classes.cardBackField}>
+                                <span>
+                            {Array.from({ length: rarity }, (_, i) => (
+                                <StarFilled key={i} style={{ fontSize: 10, color: "#fadb14" }} />
+                            ))}
+                        </span>
+                                {displayUrl ? (
+                                    <img
+                                        className={classes.cardBackPreview}
+                                        src={displayUrl}
+                                        alt={`Card back rarity ${rarity}`}
+                                    />
+                                ) : (
+                                    <div className={classes.cardBackPlaceholder} />
+                                )}
+                                <Upload
+                                    beforeUpload={() => false}
+                                    maxCount={1}
+                                    showUploadList={false}
+                                    onChange={(info) => setCardBackFile(info, rarity - 1)}
+                                >
+                                    <Button icon={<UploadOutlined />} size="small" variant="outlined">
+                                        {displayUrl ? "Change" : "Upload"}
+                                    </Button>
+                                </Upload>
+                            </div>
+                        );
+                    })}
+                </div>
+            </Flex>
 
             <Button
                 type="primary"

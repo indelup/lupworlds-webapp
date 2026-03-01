@@ -15,21 +15,74 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    align-items: center;
+
+    & > :first-child {
+        align-self: flex-start;
+    }
 }
 
 .preview {
-    width: 160px;
-    height: 100px;
+    height: 140px;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: 8px;
     border: 1px solid #d9d9d9;
 }
 
+.backgroundPlaceholder {
+    height: 140px;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    border: 1px dashed #d9d9d9;
+    background: #fafafa;
+}
+
 .logoPreview {
-    width: 100px;
-    height: 100px;
+    height: 140px;
+    aspect-ratio: 1 / 1;
     object-fit: contain;
     border-radius: 8px;
     border: 1px solid #d9d9d9;
     background: #f5f5f5;
+}
+
+.logoPlaceholder {
+    height: 140px;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    border: 1px dashed #d9d9d9;
+    background: #fafafa;
+}
+
+.cardBacksRow {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.cardBackField {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+}
+
+.cardBackPreview {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+    background: #f5f5f5;
+}
+
+.cardBackPlaceholder {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 6px;
+    border: 1px dashed #d9d9d9;
+    background: #fafafa;
 }

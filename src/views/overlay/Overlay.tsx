@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import type { Character, Material } from "@melda/lupworlds-types";
+import type { Character, Material, World } from "@melda/lupworlds-types";
 import { CharacterCard } from "../common/CharacterCard";
 import { MaterialCard } from "../common/MaterialCard";
+import { useWorldClient } from "../../hooks/useWorldClient";
 import classes from "./Overlay.module.scss";
 import env from "../../env";
 
@@ -16,21 +17,21 @@ interface PullEvent {
 const getBucketUri = (itemType: PullEvent["itemType"]) =>
     itemType === "character" ? env.VITE_CHARACTER_BUCKET_URI : env.VITE_MATERIAL_BUCKET_URI;
 
-const getBackSrc = (event: PullEvent): string => {
-    const { item, itemType } = event;
-    if (!item.backgroundSrc) return "";
-    return `${getBucketUri(itemType)}/${item.backgroundSrc}`;
+const getBackSrc = (event: PullEvent, cardBacks?: World["cardBacks"]): string => {
+    const key = cardBacks?.[event.item.rarity];
+    if (!key) return "";
+    return `${env.VITE_WORLD_BUCKET_URI}/${key}`;
 };
 
-const getImageUrls = (event: PullEvent): string[] => {
-    const { item, itemType } = event;
-    const base = getBucketUri(itemType);
+const getImageUrls = (event: PullEvent, cardBacks?: World["cardBacks"]): string[] => {
     const urls: string[] = [];
-    if (item.backgroundSrc) urls.push(`${base}/${item.backgroundSrc}`);
+    const backKey = cardBacks?.[event.item.rarity];
+    if (backKey) urls.push(`${env.VITE_WORLD_BUCKET_URI}/${backKey}`);
+    const base = getBucketUri(event.itemType);
     const mainSrc =
-        itemType === "character"
-            ? (item as Character).characterSrc
-            : (item as Material).materialSrc;
+        event.itemType === "character"
+            ? (event.item as Character).characterSrc
+            : (event.item as Material).materialSrc;
     if (mainSrc) urls.push(`${base}/${mainSrc}`);
     return urls;
 };
@@ -38,6 +39,9 @@ const getImageUrls = (event: PullEvent): string[] => {
 export const Overlay = () => {
     const [searchParams] = useSearchParams();
     const channelId = searchParams.get("channelId");
+    const worldId = searchParams.get("worldId");
+
+    const { world } = useWorldClient(worldId ?? "");
 
     const [queue, setQueue] = useState<PullEvent[]>([]);
     const [current, setCurrent] = useState<PullEvent | null>(null);
@@ -71,7 +75,7 @@ export const Overlay = () => {
             setFlipped(false);
             return;
         }
-        const urls = getImageUrls(current);
+        const urls = getImageUrls(current, world?.cardBacks);
         if (urls.length === 0) {
             setVisible(true);
             return;
@@ -91,7 +95,7 @@ export const Overlay = () => {
         return () => {
             cancelled = true;
         };
-    }, [current]);
+    }, [current, world?.cardBacks]);
 
     // Auto-hide and flip card when visible
     useEffect(() => {
@@ -116,7 +120,7 @@ export const Overlay = () => {
         return () => clearTimeout(timer);
     }, [visible, current]);
 
-return (
+    return (
         <div className={classes.container}>
             {current && (
                 <div className={`${classes.wrapper} ${visible ? classes.visible : classes.hidden}`}>
@@ -124,7 +128,7 @@ return (
                     <div className={classes.flipContainer}>
                         <div className={`${classes.flipInner} ${flipped ? classes.flipped : ""}`}>
                             <div className={classes.flipBack}>
-                                <img src={getBackSrc(current)} alt="" />
+                                <img src={getBackSrc(current, world?.cardBacks)} alt="" />
                             </div>
                             <div className={classes.flipFront}>
                                 {current.itemType === "character" ? (
