@@ -37,6 +37,7 @@
     align-items: center;
     flex-direction: column;
     color: white;
+    z-index: 11;
 }
 
 .info {
@@ -56,6 +57,7 @@
     width: 100%;
     background-color: black;
     opacity: 50%;
+    z-index: 11;
 }
 
 .mainText {
@@ -79,4 +81,33 @@
 
 .star {
     scale: 0.6
+}
+
+@keyframes shimmer {
+    100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.shimmer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #888888;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%) skewX(-15deg);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+        animation: shimmer 1.4s infinite;
+    }
+
+    &.hidden {
+        opacity: 0;
+    }
 }

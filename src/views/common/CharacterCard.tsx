@@ -2,6 +2,7 @@ import classes from "./Card.module.scss";
 import Tilt from "react-parallax-tilt";
 import { Character } from "@melda/lupworlds-types";
 import { Rate } from "antd";
+import { useEffect, useState } from "react";
 import env from "../../env";
 import { isBase64 } from "../../utils/imageHelpers";
 
@@ -24,6 +25,16 @@ export const CharacterCard = (props: CharacterCardProps) => {
           ? character.backgroundSrc
           : `${env.VITE_CHARACTER_BUCKET_URI}/${character.backgroundSrc}`;
 
+    const [mainLoaded, setMainLoaded] = useState(!characterSrc);
+    const [bgLoaded, setBgLoaded] = useState(!backgroundSrc);
+
+    useEffect(() => {
+        setMainLoaded(!characterSrc);
+        setBgLoaded(!backgroundSrc);
+    }, [characterSrc, backgroundSrc]);
+
+    const loaded = mainLoaded && bgLoaded;
+
     return (
         <Tilt
             className={classes.card}
@@ -34,8 +45,9 @@ export const CharacterCard = (props: CharacterCardProps) => {
             glareBorderRadius="0.5rem"
             glareMaxOpacity={0.15}
         >
-            <img src={characterSrc} className={classes.main} />
-            <img src={backgroundSrc} className={classes.background} />
+            <div className={`${classes.shimmer} ${loaded ? classes.hidden : ""}`} />
+            <img src={characterSrc} className={classes.main} onLoad={() => setMainLoaded(true)} onError={() => setMainLoaded(true)} />
+            <img src={backgroundSrc} className={classes.background} onLoad={() => setBgLoaded(true)} onError={() => setBgLoaded(true)} />
             <div className={classes.infoBackground}></div>
             <div className={classes.infoContainer}>
                 {character.artist ? (

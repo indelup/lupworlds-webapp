@@ -6,6 +6,7 @@ import { useState } from "react";
 import { CharacterForm } from "./CharacterForm";
 import { CharacterDelete } from "./CharacterDelete";
 import { CharacterCard } from "../../common/CharacterCard";
+import { CardPlaceholder } from "../../common/CardPlaceholder";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { useCharacterClient } from "../../../hooks/useCharacterClient";
 
@@ -38,7 +39,7 @@ export const Characters = () => {
             </div>
             <div className={classes.cardList}>
                 {loading ? (
-                    <div>Loading characters...</div>
+                    Array.from({ length: 5 }, (_, i) => <CardPlaceholder key={i} />)
                 ) : characters.length === 0 ? (
                     <div>No characters found for this world.</div>
                 ) : (

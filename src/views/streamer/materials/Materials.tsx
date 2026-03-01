@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MaterialDelete } from "./MaterialDelete";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { MaterialCard } from "../../common/MaterialCard";
+import { CardPlaceholder } from "../../common/CardPlaceholder";
 import { MaterialForm } from "./MaterialForm";
 import { useMaterialClient } from "../../../hooks/useMaterialClient";
 
@@ -38,7 +39,7 @@ export const Materials = () => {
             </div>
             <div className={classes.cardList}>
                 {loading ? (
-                    <div>Loading materials...</div>
+                    Array.from({ length: 5 }, (_, i) => <CardPlaceholder key={i} />)
                 ) : materials.length === 0 ? (
                     <div>No materials found for this world.</div>
                 ) : (
