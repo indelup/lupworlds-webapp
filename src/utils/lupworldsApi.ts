@@ -1,6 +1,6 @@
 import axios from "axios";
 import env from "../env";
-import { ROLE, TwitchData, User, Character, Material, Banner, World } from "@melda/lupworlds-types";
+import { ROLE, TwitchData, User, Character, Material, Action, Banner, World } from "@melda/lupworlds-types";
 import { UploadFile } from "antd";
 
 export const getOrCreateUser = async (
@@ -140,6 +140,39 @@ export const updateMaterial = async (
 export const deleteMaterial = async (materialId: string): Promise<void> => {
     const response = await axios.delete(
         `${env.VITE_LUPWORLDS_API_URI}/materials/${materialId}`,
+    );
+    return response.data;
+};
+
+// ACTIONS
+export const getActions = async (worldId: string): Promise<Action[]> => {
+    const response = await axios.get(
+        `${env.VITE_LUPWORLDS_API_URI}/actions?worldId=${worldId}`,
+    );
+    return response.data;
+};
+
+export const createAction = async (
+    action: Omit<Action, "id">,
+): Promise<Action> => {
+    const response = await axios.post(
+        `${env.VITE_LUPWORLDS_API_URI}/actions`,
+        action,
+    );
+    return response.data;
+};
+
+export const updateAction = async (action: Action): Promise<Action> => {
+    const response = await axios.put(
+        `${env.VITE_LUPWORLDS_API_URI}/actions/${action.id}`,
+        action,
+    );
+    return response.data;
+};
+
+export const deleteAction = async (actionId: string): Promise<void> => {
+    const response = await axios.delete(
+        `${env.VITE_LUPWORLDS_API_URI}/actions/${actionId}`,
     );
     return response.data;
 };

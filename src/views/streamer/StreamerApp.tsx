@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Characters } from "./characters/Characters";
 import { Materials } from "./materials/Materials";
 import { Banners } from "./banners/Banners";
-import { Stores } from "./stores/Stores";
+import { Actions } from "./actions/Actions";
 import { WorldConfig } from "./worldConfig/WorldConfig";
 import { TwitchConfig } from "./twitchConfig/TwitchConfig";
 import classes from "./StreamerApp.module.scss";
@@ -15,9 +15,8 @@ import {
     RadarChartOutlined,
     GoldOutlined,
     FireOutlined,
-    ShoppingCartOutlined,
+    ThunderboltOutlined,
     TwitchOutlined,
-    SettingOutlined,
     StarOutlined,
 } from "@ant-design/icons";
 
@@ -43,10 +42,9 @@ const items: MenuItem[] = [
     getItem("Characters", "characters", <RadarChartOutlined />),
     getItem("Materials", "materials", <GoldOutlined />),
     getItem("Banners", "banners", <FireOutlined />),
-    getItem("Stores", "stores", <ShoppingCartOutlined />),
+    getItem("Actions", "actions", <ThunderboltOutlined />),
     getItem("World Config", "world", <StarOutlined />),
     getItem("Twitch Config", "twitch", <TwitchOutlined />),
-    getItem("Settings", "settings", <SettingOutlined />),
 ];
 
 export const StreamerApp = () => {
@@ -105,8 +103,8 @@ const getActiveView = (view: string) => {
             return Materials;
         case "banners":
             return Banners;
-        case "stores":
-            return Stores;
+        case "actions":
+            return Actions;
         case "world":
             return WorldConfig;
         case "twitch":
