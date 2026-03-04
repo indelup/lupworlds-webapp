@@ -100,6 +100,7 @@ export const WorldConfig = () => {
                 backgroundSrc,
                 redeems: draft.redeems,
                 cardBacks: Object.keys(cardBacks).length > 0 ? cardBacks : undefined,
+                currencies: draft.currencies,
             };
 
             await updateWorld(worldToSave);

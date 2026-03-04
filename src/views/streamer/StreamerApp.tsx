@@ -7,6 +7,7 @@ import { Banners } from "./banners/Banners";
 import { Actions } from "./actions/Actions";
 import { WorldConfig } from "./worldConfig/WorldConfig";
 import { TwitchConfig } from "./twitchConfig/TwitchConfig";
+import { CurrencyConfig } from "./currencyConfig/CurrencyConfig";
 import classes from "./StreamerApp.module.scss";
 
 import type { MenuProps } from "antd";
@@ -18,6 +19,7 @@ import {
     ThunderboltOutlined,
     TwitchOutlined,
     StarOutlined,
+    DollarOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Sider } = Layout;
@@ -43,6 +45,7 @@ const items: MenuItem[] = [
     getItem("Materials", "materials", <GoldOutlined />),
     getItem("Banners", "banners", <FireOutlined />),
     getItem("Actions", "actions", <ThunderboltOutlined />),
+    getItem("Currencies", "currencies", <DollarOutlined />),
     getItem("World Config", "world", <StarOutlined />),
     getItem("Twitch Config", "twitch", <TwitchOutlined />),
 ];
@@ -105,6 +108,8 @@ const getActiveView = (view: string) => {
             return Banners;
         case "actions":
             return Actions;
+        case "currencies":
+            return CurrencyConfig;
         case "world":
             return WorldConfig;
         case "twitch":
