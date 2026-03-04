@@ -1,7 +1,9 @@
-import { Button, Flex, Input, Spin, Typography } from "antd";
-import { DeleteFilled, PlusOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Flex, Input, Spin, Typography, Upload } from "antd";
+import { DeleteFilled, DollarOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import { Currency, World } from "@melda/lupworlds-types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { UploadChangeParam } from "antd/es/upload";
+import { UploadFile } from "antd";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { useWorldClient } from "../../../hooks/useWorldClient";
 import { getPresignedUrl } from "../../../utils/lupworldsApi";
@@ -26,7 +28,10 @@ export const CurrencyConfig = () => {
     const [files, setFiles] = useState<Record<string, File>>({});
     const [saving, setSaving] = useState(false);
 
-    const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+    // Form state for new currency
+    const [newName, setNewName] = useState("");
+    const [newIconFile, setNewIconFile] = useState<UploadFile | undefined>();
+    const [newIconPreview, setNewIconPreview] = useState<string | undefined>();
 
     useEffect(() => {
         if (world) {
@@ -34,22 +39,33 @@ export const CurrencyConfig = () => {
         }
     }, [world]);
 
+    const onIconChange = async (info: UploadChangeParam<UploadFile>) => {
+        const file = info.file;
+        if (file.status === "removed") {
+            setNewIconFile(undefined);
+            setNewIconPreview(undefined);
+            return;
+        }
+        if (!file.preview) {
+            file.preview = await getBase64(file);
+        }
+        setNewIconFile(file);
+        setNewIconPreview(file.preview as string);
+    };
+
     const onAdd = () => {
+        if (!newName) return;
         const id = crypto.randomUUID();
-        setCurrencies((prev) => [...prev, { id, name: "", image: "" }]);
+        setCurrencies((prev) => [...prev, { id, name: newName, image: newIconPreview ?? "" }]);
+        if (newIconFile?.originFileObj) {
+            setFiles((prev) => ({ ...prev, [id]: newIconFile.originFileObj as File }));
+        }
+        setNewName("");
+        setNewIconFile(undefined);
+        setNewIconPreview(undefined);
     };
 
-    const onNameChange = (id: string, name: string) => {
-        setCurrencies((prev) => prev.map((c) => (c.id === id ? { ...c, name } : c)));
-    };
-
-    const onFileChange = async (id: string, file: File) => {
-        const preview = await getBase64(file);
-        setFiles((prev) => ({ ...prev, [id]: file }));
-        setCurrencies((prev) => prev.map((c) => (c.id === id ? { ...c, image: preview } : c)));
-    };
-
-    const onDelete = (id: string) => {
+    const onRemove = (id: string) => {
         setCurrencies((prev) => prev.filter((c) => c.id !== id));
         setFiles((prev) => {
             const next = { ...prev };
@@ -99,68 +115,72 @@ export const CurrencyConfig = () => {
 
     return (
         <div className={classes.container}>
-            <Flex justify="space-between" align="center">
-                <Button icon={<PlusOutlined />} onClick={onAdd}>
-                    Add Currency
-                </Button>
-                <Button
-                    type="primary"
-                    icon={<SaveOutlined />}
-                    loading={saving || isUpdating}
-                    onClick={onSave}
-                >
-                    Save
-                </Button>
-            </Flex>
+            <Text strong><DollarOutlined /> Currencies</Text>
 
-            {currencies.length === 0 ? (
-                <Text type="secondary">No currencies yet. Add one above.</Text>
-            ) : (
-                <div className={classes.list}>
-                    {currencies.map((c) => {
-                        const displayUrl = toDisplayUrl(c.image);
-                        return (
-                            <div key={c.id} className={classes.row}>
-                                <div
-                                    className={classes.iconPreview}
-                                    onClick={() => fileInputRefs.current[c.id]?.click()}
-                                    title="Click to upload icon"
-                                >
-                                    {displayUrl ? (
-                                        <img src={displayUrl} alt={c.name} className={classes.iconImg} />
-                                    ) : (
-                                        <UploadOutlined className={classes.iconPlaceholder} />
+            <div className={classes.section}>
+                <Flex gap={8} align="center">
+                    <Upload
+                        beforeUpload={() => false}
+                        maxCount={1}
+                        showUploadList={false}
+                        fileList={newIconFile ? [newIconFile] : []}
+                        onChange={onIconChange}
+                    >
+                        <div className={`${classes.iconUpload} ${newIconPreview ? classes.iconUploadFilled : ""}`}>
+                            {newIconPreview ? (
+                                <img src={newIconPreview} className={classes.iconUploadImg} alt="icon preview" />
+                            ) : (
+                                <UploadOutlined className={classes.iconUploadPlaceholder} />
+                            )}
+                        </div>
+                    </Upload>
+                    <Input
+                        className={classes.nameInput}
+                        placeholder="Currency name"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                    />
+                    <Button onClick={onAdd} disabled={!newName}>
+                        + Add
+                    </Button>
+                </Flex>
+            </div>
+
+            <div className={classes.section}>
+                {currencies.length === 0 ? (
+                    <Text type="secondary">No currencies yet.</Text>
+                ) : (
+                    <div className={classes.currencyList}>
+                        {currencies.map((c) => {
+                            const displayUrl = toDisplayUrl(c.image);
+                            return (
+                                <div key={c.id} className={classes.currencyRow}>
+                                    {displayUrl && (
+                                        <img src={displayUrl} className={classes.iconThumb} alt={c.name} />
                                     )}
+                                    <Text className={classes.currencyName}>{c.name}</Text>
+                                    <Button
+                                        type="primary"
+                                        shape="circle"
+                                        icon={<DeleteFilled />}
+                                        danger
+                                        onClick={() => onRemove(c.id)}
+                                    />
                                 </div>
-                                <input
-                                    ref={(el) => { fileInputRefs.current[c.id] = el; }}
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: "none" }}
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) onFileChange(c.id, file);
-                                        e.target.value = "";
-                                    }}
-                                />
-                                <Input
-                                    placeholder="Currency name"
-                                    value={c.name}
-                                    onChange={(e) => onNameChange(c.id, e.target.value)}
-                                    className={classes.nameInput}
-                                />
-                                <Button
-                                    type="primary"
-                                    shape="circle"
-                                    danger
-                                    icon={<DeleteFilled />}
-                                    onClick={() => onDelete(c.id)}
-                                />
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            <Button
+                type="primary"
+                onClick={onSave}
+                loading={saving || isUpdating}
+                icon={<SaveOutlined />}
+            >
+                Save
+            </Button>
         </div>
     );
 };

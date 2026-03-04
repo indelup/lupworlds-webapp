@@ -43,8 +43,8 @@ const getItem = (
 const items: MenuItem[] = [
     getItem("Characters", "characters", <RadarChartOutlined />),
     getItem("Materials", "materials", <GoldOutlined />),
-    getItem("Banners", "banners", <FireOutlined />),
     getItem("Actions", "actions", <ThunderboltOutlined />),
+    getItem("Banners", "banners", <FireOutlined />),
     getItem("Currencies", "currencies", <DollarOutlined />),
     getItem("World Config", "world", <StarOutlined />),
     getItem("Twitch Config", "twitch", <TwitchOutlined />),

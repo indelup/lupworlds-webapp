@@ -10,7 +10,13 @@ import { Overlay } from "./views/overlay/Overlay.tsx";
 import { ConfigProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+        },
+    },
+});
 
 const router = createBrowserRouter([
     {
