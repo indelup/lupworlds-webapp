@@ -1,0 +1,25 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ingredientRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ingredientSelect {
+    flex: 1;
+}
+
+.quantityInput {
+    width: 80px;
+}
+
+.ingredientList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
