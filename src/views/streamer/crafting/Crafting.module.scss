@@ -36,18 +36,33 @@
 
 .outputName {
     font-weight: 600;
+    padding-left: 7px;
 }
 
 .ingredients {
     display: flex;
-    gap: 8px;
     flex-wrap: wrap;
     align-items: center;
+}
+
+.description {
+    font-size: 12px;
 }
 
 .currency {
     color: #8c8c8c;
     font-size: 12px;
+    line-height: 16px;
+    padding-left: 7px;
+}
+
+.currencyIcon {
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
+    vertical-align: middle;
 }
 
 .actions {

@@ -23,7 +23,7 @@ export const CraftingDelete = ({
             title="Delete Recipe"
             onCancel={onClose}
             onOk={onConfirm}
-            okButtonProps={{ danger: true, loading: deleting }}
+            okButtonProps={{ color: "danger", loading: deleting }}
             okText="Delete"
         >
             <Text>

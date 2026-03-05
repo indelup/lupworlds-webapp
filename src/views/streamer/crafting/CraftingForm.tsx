@@ -55,11 +55,11 @@ export const CraftingForm = ({
     const outputOptions = [
         {
             label: "Characters",
-            options: characters.map((c) => ({ label: c.name, value: c.id })),
+            options: characters.map((c) => ({ label: c.name, value: c.id, desc: c.description })),
         },
         {
             label: "Actions",
-            options: actions.map((a) => ({ label: a.name, value: a.id })),
+            options: actions.map((a) => ({ label: a.name, value: a.id, desc: a.description })),
         },
     ];
 
@@ -127,6 +127,16 @@ export const CraftingForm = ({
                         options={outputOptions}
                         onChange={setOutputItemId}
                         disabled={!!editItemId}
+                        optionRender={(option) => (
+                            <Flex vertical>
+                                <Text>{option.data.label}</Text>
+                                {option.data.desc && (
+                                    <Text type="secondary" style={{ fontSize: 11 }}>
+                                        {option.data.desc}
+                                    </Text>
+                                )}
+                            </Flex>
+                        )}
                     />
                     {duplicateWarning && (
                         <Text type="danger" style={{ fontSize: 12 }}>
@@ -138,7 +148,7 @@ export const CraftingForm = ({
                 <div>
                     <Flex justify="space-between" align="center">
                         <Text strong>Ingredients</Text>
-                        <Button size="small" icon={<PlusOutlined />} onClick={onAddIngredient}>
+                        <Button color="cyan" variant="solid" size="small" icon={<PlusOutlined />} onClick={onAddIngredient}>
                             Add
                         </Button>
                     </Flex>
@@ -159,6 +169,7 @@ export const CraftingForm = ({
                                     onChange={(val) => onIngredientChange(index, "quantity", val ?? 1)}
                                 />
                                 <Button
+                                    type="primary"
                                     danger
                                     shape="circle"
                                     icon={<DeleteOutlined />}

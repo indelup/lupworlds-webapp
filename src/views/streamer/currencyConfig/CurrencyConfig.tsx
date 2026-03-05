@@ -32,6 +32,7 @@ export const CurrencyConfig = () => {
     const [newName, setNewName] = useState("");
     const [newIconFile, setNewIconFile] = useState<UploadFile | undefined>();
     const [newIconPreview, setNewIconPreview] = useState<string | undefined>();
+    const [newIconNativeFile, setNewIconNativeFile] = useState<File | undefined>();
 
     useEffect(() => {
         if (world) {
@@ -44,25 +45,29 @@ export const CurrencyConfig = () => {
         if (file.status === "removed") {
             setNewIconFile(undefined);
             setNewIconPreview(undefined);
+            setNewIconNativeFile(undefined);
             return;
         }
+        const nativeFile = (file.originFileObj ?? file) as File;
         if (!file.preview) {
-            file.preview = await getBase64(file);
+            file.preview = await getBase64(nativeFile);
         }
         setNewIconFile(file);
         setNewIconPreview(file.preview as string);
+        setNewIconNativeFile(nativeFile);
     };
 
     const onAdd = () => {
         if (!newName) return;
         const id = crypto.randomUUID();
         setCurrencies((prev) => [...prev, { id, name: newName, image: newIconPreview ?? "" }]);
-        if (newIconFile?.originFileObj) {
-            setFiles((prev) => ({ ...prev, [id]: newIconFile.originFileObj as File }));
+        if (newIconNativeFile) {
+            setFiles((prev) => ({ ...prev, [id]: newIconNativeFile }));
         }
         setNewName("");
         setNewIconFile(undefined);
         setNewIconPreview(undefined);
+        setNewIconNativeFile(undefined);
     };
 
     const onRemove = (id: string) => {

@@ -3,6 +3,7 @@ import { DeleteFilled, EditFilled, ExperimentOutlined, PlusOutlined } from "@ant
 import { Recipe, World } from "@melda/lupworlds-types";
 import { useState } from "react";
 import { AppState, useStore } from "../../../hooks/useStore";
+import env from "../../../env";
 import { useWorldClient } from "../../../hooks/useWorldClient";
 import { useCharacterClient } from "../../../hooks/useCharacterClient";
 import { useActionClient } from "../../../hooks/useActionClient";
@@ -38,16 +39,22 @@ export const Crafting = () => {
 
     const recipes = world?.recipes ?? {};
 
-    const resolveItemName = (itemId: string): { name: string; type: "character" | "action" | "unknown" } => {
+    const resolveItem = (itemId: string): { name: string; description: string; type: "character" | "action" | "unknown" } => {
         const char = characters.find((c) => c.id === itemId);
-        if (char) return { name: char.name, type: "character" };
+        if (char) return { name: char.name, description: char.description, type: "character" };
         const action = actions.find((a) => a.id === itemId);
-        if (action) return { name: action.name, type: "action" };
-        return { name: itemId, type: "unknown" };
+        if (action) return { name: action.name, description: action.description, type: "action" };
+        return { name: itemId, description: "", type: "unknown" };
     };
 
     const resolveMaterialName = (materialId: string): string => {
         return materials.find((m) => m.id === materialId)?.name ?? materialId;
+    };
+
+    const resolveCurrencyLogoUrl = (currencyId: string): string | undefined => {
+        const currency = (world?.currencies ?? []).find((c) => c.id === currencyId);
+        if (!currency?.image) return undefined;
+        return `${env.VITE_WORLD_BUCKET_URI}/${currency.image}`;
     };
 
     const resolveCurrencyName = (currencyId: string): string => {
@@ -103,7 +110,7 @@ export const Crafting = () => {
         }
     };
 
-    const deleteItemName = deleteItemId ? resolveItemName(deleteItemId).name : "";
+    const deleteItemName = deleteItemId ? resolveItem(deleteItemId).name : "";
 
     return (
         <div className={classes.container}>
@@ -111,7 +118,7 @@ export const Crafting = () => {
                 <Text strong>
                     <ExperimentOutlined /> Crafting Recipes
                 </Text>
-                <Button type="primary" icon={<PlusOutlined />} onClick={onNew}>
+                <Button color="cyan" variant="solid" icon={<PlusOutlined />} onClick={onNew}>
                     New Recipe
                 </Button>
             </div>
@@ -121,12 +128,19 @@ export const Crafting = () => {
             ) : (
                 <div className={classes.recipeList}>
                     {Object.entries(recipes).map(([itemId, recipe]) => {
-                        const { name, type } = resolveItemName(itemId);
+                        const { name, description, type } = resolveItem(itemId);
+                        const currencyLogoUrl = resolveCurrencyLogoUrl(recipe.currencyId);
+                        const currencyName = resolveCurrencyName(recipe.currencyId);
                         return (
                             <div key={itemId} className={classes.recipeRow}>
                                 <div className={classes.recipeInfo}>
                                     <Flex align="center" gap={8}>
                                         <Text className={classes.outputName}>{name}</Text>
+                                        {description && (
+                                            <Text type="secondary" className={classes.description}>
+                                                {description}
+                                            </Text>
+                                        )}
                                         <Tag color={type === "character" ? "blue" : type === "action" ? "purple" : "default"}>
                                             {type}
                                         </Tag>
@@ -138,16 +152,25 @@ export const Crafting = () => {
                                             </Tag>
                                         ))}
                                     </div>
-                                    <Text className={classes.currency}>
-                                        Cost: {recipe.currencyAmount} {resolveCurrencyName(recipe.currencyId)}
-                                    </Text>
+                                    <Flex align="center" gap={4} className={classes.currency}>
+                                        <Text>Cost: {recipe.currencyAmount}</Text>
+                                        {currencyLogoUrl ? (
+                                            <img src={currencyLogoUrl} className={classes.currencyIcon} alt={currencyName} />
+                                        ) : (
+                                            <Text>{currencyName}</Text>
+                                        )}
+                                    </Flex>
                                 </div>
                                 <div className={classes.actions}>
                                     <Button
+                                        type="primary"
+                                        shape="circle"
                                         icon={<EditFilled />}
                                         onClick={() => onEdit(itemId, recipe)}
                                     />
                                     <Button
+                                        type="primary"
+                                        shape="circle"
                                         danger
                                         icon={<DeleteFilled />}
                                         onClick={() => onDelete(itemId)}
