@@ -2,8 +2,9 @@ import { Button, Select, Input } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { BannerBag, Character, Material } from "@melda/lupworlds-types";
 import classes from "./BannerForm.module.scss";
-import { CharacterCard } from "../../../common/CharacterCard";
-import { MaterialCard } from "../../../common/MaterialCard";
+import { AssetCard } from "../../assets/AssetCard";
+import { characterToAsset, materialToAsset } from "../../assets/assetMappers";
+import env from "../../../../env";
 
 type BannerBagFormProps = {
     bag: BannerBag;
@@ -84,7 +85,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <CharacterCard character={character} />
+                                    <AssetCard item={characterToAsset(character)} bucketUri={env.VITE_CHARACTER_BUCKET_URI} />
                                     <Button
                                         size="large"
                                         variant="solid"
@@ -112,7 +113,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <MaterialCard material={material} />
+                                    <AssetCard item={materialToAsset(material)} bucketUri={env.VITE_MATERIAL_BUCKET_URI} />
                                     <Button
                                         size="large"
                                         variant="solid"

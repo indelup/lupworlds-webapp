@@ -6,6 +6,7 @@ import classes from "./BannerForm.module.scss";
 import { AppState, useStore } from "../../../../hooks/useStore";
 import { UploadChangeParam } from "antd/es/upload";
 import { uploadImage } from "../../../../utils/lupworldsApi";
+import { getBase64 } from "../../../../utils/imageHelpers";
 import { useBannerClient } from "../../../../hooks/useBannerClient";
 import { useCharacterClient } from "../../../../hooks/useCharacterClient";
 import { useMaterialClient } from "../../../../hooks/useMaterialClient";
@@ -19,14 +20,6 @@ type BannerFormProps = {
     setOpen: (open: boolean) => void;
     onBannerCreated?: () => void;
 };
-
-const getBase64 = (file: any): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-    });
 
 const initialBanner = {
     id: "temp",
@@ -63,20 +56,18 @@ export const BannerForm = (props: BannerFormProps) => {
         }
     }, [open]);
 
-    // Transform received file to base64 so it can be shown in Preview
     const setFile = async (
         info: UploadChangeParam<UploadFile>,
         callback: (file: UploadFile) => void,
     ) => {
         const file = info.file;
-        if (file.status !== "removed" && !file.url && !file.preview) {
+        if (file.status === "removed") return;
+        if (!file.url && !file.preview) {
             file.preview = await getBase64(file);
         }
-
         callback(file);
     };
 
-    // Sets the main image preview
     const setBannerFile = (file: UploadFile) => {
         const previewSrc = file.url || (file.preview as string);
         setBannerImage(file);
@@ -236,6 +227,7 @@ export const BannerForm = (props: BannerFormProps) => {
                         <Upload
                             onRemove={() => {
                                 setBannerImage(undefined);
+                                setBanner({ ...banner, imageSrc: existingBanner?.imageSrc ?? "" });
                             }}
                             onChange={(info) => setFile(info, setBannerFile)}
                             beforeUpload={() => {

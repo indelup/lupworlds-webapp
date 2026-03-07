@@ -1,37 +1,37 @@
-import classes from "./Card.module.scss";
+import classes from "../../common/Card.module.scss";
 import Tilt from "react-parallax-tilt";
-import { Action } from "@melda/lupworlds-types";
 import { Rate } from "antd";
 import { useEffect, useState } from "react";
-import env from "../../env";
-import { isBase64 } from "../../utils/imageHelpers";
+import { isBase64 } from "../../../utils/imageHelpers";
+import { AssetItem } from "./assetTypes";
 
-type ActionCardProps = {
-    action: Action;
-    mainSrc?: string;
-    bgSrc?: string;
+type AssetCardProps = {
+    item: AssetItem;
+    bucketUri: string;
 };
 
-export const ActionCard = (props: ActionCardProps) => {
-    const { action } = props;
-    const actionSrc = !action.actionSrc
+export const AssetCard = ({ item, bucketUri }: AssetCardProps) => {
+    const mainSrc = !item.mainSrc
         ? ""
-        : isBase64(action.actionSrc)
-          ? action.actionSrc
-          : `${env.VITE_ACTION_BUCKET_URI}/${action.actionSrc}`;
-    const backgroundSrc = !action.backgroundSrc
+        : isBase64(item.mainSrc)
+          ? item.mainSrc
+          : `${bucketUri}/${item.mainSrc}`;
+    const backgroundSrc = !item.backgroundSrc
         ? ""
-        : isBase64(action.backgroundSrc)
-          ? action.backgroundSrc
-          : `${env.VITE_ACTION_BUCKET_URI}/${action.backgroundSrc}`;
+        : isBase64(item.backgroundSrc)
+          ? item.backgroundSrc
+          : `${bucketUri}/${item.backgroundSrc}`;
 
-    const [mainLoaded, setMainLoaded] = useState(!actionSrc);
+    const [mainLoaded, setMainLoaded] = useState(!mainSrc);
     const [bgLoaded, setBgLoaded] = useState(!backgroundSrc);
 
     useEffect(() => {
-        setMainLoaded(!actionSrc);
+        setMainLoaded(!mainSrc);
+    }, [mainSrc]);
+
+    useEffect(() => {
         setBgLoaded(!backgroundSrc);
-    }, [actionSrc, backgroundSrc]);
+    }, [backgroundSrc]);
 
     const loaded = mainLoaded && bgLoaded;
 
@@ -46,27 +46,26 @@ export const ActionCard = (props: ActionCardProps) => {
             glareMaxOpacity={0.15}
         >
             <div className={`${classes.shimmer} ${loaded ? classes.hidden : ""}`} />
-            <img src={actionSrc} className={classes.main} onLoad={() => setMainLoaded(true)} onError={() => setMainLoaded(true)} />
+            <img src={mainSrc} className={classes.main} onLoad={() => setMainLoaded(true)} onError={() => setMainLoaded(true)} />
             <img src={backgroundSrc} className={classes.background} onLoad={() => setBgLoaded(true)} onError={() => setBgLoaded(true)} />
             <div className={classes.infoBackground}></div>
             <div className={classes.infoContainer}>
-                {action.artist ? (
+                {item.artist ? (
                     <div className={classes.artistText}>
-                        Art: {action.artist}
+                        Art: {item.artist}
                     </div>
                 ) : (
                     <div></div>
                 )}
-
                 <div className={classes.info}>
-                    <div className={classes.mainText}>{action.name}</div>
+                    <div className={classes.mainText}>{item.name}</div>
                     <Rate
                         className={classes.star}
-                        value={action.rarity}
-                        count={action.rarity}
+                        value={item.rarity}
+                        count={item.rarity}
                         disabled
                     />
-                    <div>{action.description}</div>
+                    <div>{item.description}</div>
                 </div>
             </div>
         </Tilt>

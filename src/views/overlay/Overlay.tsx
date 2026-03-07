@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import type { Character, Material, World } from "@melda/lupworlds-types";
-import { CharacterCard } from "../common/CharacterCard";
-import { MaterialCard } from "../common/MaterialCard";
+import { AssetCard } from "../streamer/assets/AssetCard";
+import { characterToAsset, materialToAsset } from "../streamer/assets/assetMappers";
 import { useWorldClient } from "../../hooks/useWorldClient";
 import classes from "./Overlay.module.scss";
 import env from "../../env";
@@ -132,9 +132,9 @@ export const Overlay = () => {
                             </div>
                             <div className={classes.flipFront}>
                                 {current.itemType === "character" ? (
-                                    <CharacterCard character={current.item as Character} />
+                                    <AssetCard item={characterToAsset(current.item as Character)} bucketUri={env.VITE_CHARACTER_BUCKET_URI} />
                                 ) : (
-                                    <MaterialCard material={current.item as Material} />
+                                    <AssetCard item={materialToAsset(current.item as Material)} bucketUri={env.VITE_MATERIAL_BUCKET_URI} />
                                 )}
                             </div>
                         </div>
