@@ -127,16 +127,21 @@ export const CraftingForm = ({
                         options={outputOptions}
                         onChange={setOutputItemId}
                         disabled={!!editItemId}
-                        optionRender={(option) => (
-                            <Flex vertical>
-                                <Text>{option.data.label}</Text>
-                                {option.data.desc && (
-                                    <Text type="secondary" style={{ fontSize: 11 }}>
-                                        {option.data.desc}
-                                    </Text>
-                                )}
-                            </Flex>
-                        )}
+                        optionRender={(option) => {
+                            const desc = outputOptions
+                                .flatMap((g) => g.options)
+                                .find((o) => o.value === option.value)?.desc;
+                            return (
+                                <Flex vertical>
+                                    <Text>{option.label}</Text>
+                                    {desc && (
+                                        <Text type="secondary" style={{ fontSize: 11 }}>
+                                            {desc}
+                                        </Text>
+                                    )}
+                                </Flex>
+                            );
+                        }}
                     />
                     {duplicateWarning && (
                         <Text type="danger" style={{ fontSize: 12 }}>

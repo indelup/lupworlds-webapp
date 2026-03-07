@@ -10,7 +10,7 @@ import { getBase64, isBase64 } from "../../../utils/imageHelpers";
 import env from "../../../env";
 import classes from "./WorldConfig.module.scss";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const RARITIES = [1, 2, 3, 4, 5] as const;
 
