@@ -85,7 +85,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <AssetCard item={characterToAsset(character)} bucketUri={env.VITE_CHARACTER_BUCKET_URI} />
+                                    <AssetCard item={characterToAsset(character)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
                                     <Button
                                         size="large"
                                         variant="solid"
@@ -113,7 +113,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <AssetCard item={materialToAsset(material)} bucketUri={env.VITE_MATERIAL_BUCKET_URI} />
+                                    <AssetCard item={materialToAsset(material)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
                                     <Button
                                         size="large"
                                         variant="solid"

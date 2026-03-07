@@ -287,7 +287,7 @@ const saveBanner = async (
     let imageSrc = banner.imageSrc;
 
     if (bannerImage) {
-        imageSrc = await uploadImage(bannerImage, "banners");
+        imageSrc = await uploadImage(bannerImage, "banners", banner.worldId);
     }
 
     if (mode === "create") {

@@ -17,7 +17,7 @@ const RARITIES = [1, 2, 3, 4, 5] as const;
 const toDisplayUrl = (src: string | undefined): string | undefined => {
     if (!src) return undefined;
     if (isBase64(src)) return src;
-    return `${env.VITE_WORLD_BUCKET_URI}/${src}`;
+    return `${env.VITE_CONFIG_BUCKET_URI}/${src}`;
 };
 
 export const WorldConfig = () => {
@@ -76,10 +76,10 @@ export const WorldConfig = () => {
             let backgroundSrc = draft.backgroundSrc;
 
             if (logoFile) {
-                logoSrc = await uploadImage(logoFile, "worlds");
+                logoSrc = await uploadImage(logoFile, "config", activeWorld.id);
             }
             if (backgroundFile) {
-                backgroundSrc = await uploadImage(backgroundFile, "worlds");
+                backgroundSrc = await uploadImage(backgroundFile, "config", activeWorld.id);
             }
 
             // Merge existing cardBacks with any newly uploaded files
@@ -87,7 +87,7 @@ export const WorldConfig = () => {
             for (const rarity of RARITIES) {
                 const file = cardBackFiles[rarity - 1];
                 if (file) {
-                    cardBacks[rarity] = await uploadImage(file, "worlds");
+                    cardBacks[rarity] = await uploadImage(file, "config", activeWorld.id);
                 }
             }
 

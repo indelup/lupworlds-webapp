@@ -54,7 +54,7 @@ export const Crafting = () => {
     const resolveCurrencyLogoUrl = (currencyId: string): string | undefined => {
         const currency = (world?.currencies ?? []).find((c) => c.id === currencyId);
         if (!currency?.image) return undefined;
-        return `${env.VITE_WORLD_BUCKET_URI}/${currency.image}`;
+        return `${env.VITE_CONFIG_BUCKET_URI}/${currency.image}`;
     };
 
     const resolveCurrencyName = (currencyId: string): string => {

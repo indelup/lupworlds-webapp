@@ -29,23 +29,27 @@ export const getOrCreateUser = async (
 export const getPresignedUrl = async (
     fileName: string,
     contentType: string,
-    bucketType: string,
+    prefix: string,
+    worldId: string,
 ): Promise<{ url: string; key: string }> => {
     const response = await axios.post(
-        `${env.VITE_LUPWORLDS_API_URI}/${bucketType}/get-presigned-url`,
+        `${env.VITE_LUPWORLDS_API_URI}/images/get-presigned-url`,
         {
             fileName,
             contentType,
+            prefix,
+            worldId,
         },
     );
     return response.data;
 };
 
-export const uploadImage = async (image: UploadFile, bucketType: string) => {
+export const uploadImage = async (image: UploadFile, prefix: string, worldId: string) => {
     const { url, key } = await getPresignedUrl(
-        image.name || "character.jpg",
+        image.name || "image.jpg",
         image.type || "image/jpeg",
-        bucketType,
+        prefix,
+        worldId,
     );
 
     await fetch(url, {

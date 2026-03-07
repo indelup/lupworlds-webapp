@@ -22,7 +22,7 @@ const BannerItem = ({ banner, onEdit, onDelete }: BannerItemProps) => {
         ? ""
         : isBase64(banner.imageSrc)
           ? banner.imageSrc
-          : `${env.VITE_BANNER_BUCKET_URI}/${banner.imageSrc}`;
+          : `${env.VITE_CONFIG_BUCKET_URI}/${banner.imageSrc}`;
 
     return (
         <Flex gap={8} vertical>

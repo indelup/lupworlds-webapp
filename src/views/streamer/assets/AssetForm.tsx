@@ -105,10 +105,10 @@ export const AssetForm = ({
             let finalBackgroundSrc = backgroundSrc;
 
             if (mainImage) {
-                finalMainSrc = await uploadImage(mainImage, config.bucketType);
+                finalMainSrc = await uploadImage(mainImage, config.bucketType, activeWorld?.id ?? "");
             }
             if (backgroundImage) {
-                finalBackgroundSrc = await uploadImage(backgroundImage, config.bucketType);
+                finalBackgroundSrc = await uploadImage(backgroundImage, config.bucketType, activeWorld?.id ?? "");
             }
 
             const item: AssetItem = {

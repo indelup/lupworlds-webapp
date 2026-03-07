@@ -14,19 +14,18 @@ interface PullEvent {
     item: Character | Material;
 }
 
-const getBucketUri = (itemType: PullEvent["itemType"]) =>
-    itemType === "character" ? env.VITE_CHARACTER_BUCKET_URI : env.VITE_MATERIAL_BUCKET_URI;
+const getBucketUri = (_itemType: PullEvent["itemType"]) => env.VITE_ASSET_BUCKET_URI;
 
 const getBackSrc = (event: PullEvent, cardBacks?: World["cardBacks"]): string => {
     const key = cardBacks?.[event.item.rarity];
     if (!key) return "";
-    return `${env.VITE_WORLD_BUCKET_URI}/${key}`;
+    return `${env.VITE_CONFIG_BUCKET_URI}/${key}`;
 };
 
 const getImageUrls = (event: PullEvent, cardBacks?: World["cardBacks"]): string[] => {
     const urls: string[] = [];
     const backKey = cardBacks?.[event.item.rarity];
-    if (backKey) urls.push(`${env.VITE_WORLD_BUCKET_URI}/${backKey}`);
+    if (backKey) urls.push(`${env.VITE_CONFIG_BUCKET_URI}/${backKey}`);
     const base = getBucketUri(event.itemType);
     const mainSrc =
         event.itemType === "character"
@@ -132,9 +131,9 @@ export const Overlay = () => {
                             </div>
                             <div className={classes.flipFront}>
                                 {current.itemType === "character" ? (
-                                    <AssetCard item={characterToAsset(current.item as Character)} bucketUri={env.VITE_CHARACTER_BUCKET_URI} />
+                                    <AssetCard item={characterToAsset(current.item as Character)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
                                 ) : (
-                                    <AssetCard item={materialToAsset(current.item as Material)} bucketUri={env.VITE_MATERIAL_BUCKET_URI} />
+                                    <AssetCard item={materialToAsset(current.item as Material)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
                                 )}
                             </div>
                         </div>

@@ -16,7 +16,7 @@ const { Text } = Typography;
 const toDisplayUrl = (image: string | undefined): string | undefined => {
     if (!image) return undefined;
     if (isBase64(image)) return image;
-    return `${env.VITE_WORLD_BUCKET_URI}/${image}`;
+    return `${env.VITE_CONFIG_BUCKET_URI}/${image}`;
 };
 
 export const CurrencyConfig = () => {
@@ -87,7 +87,7 @@ export const CurrencyConfig = () => {
                 currencies.map(async (c) => {
                     const file = files[c.id];
                     if (file) {
-                        const { url, key } = await getPresignedUrl(file.name, file.type || "image/png", "worlds");
+                        const { url, key } = await getPresignedUrl(file.name, file.type || "image/png", "config", activeWorld.id);
                         await fetch(url, {
                             method: "PUT",
                             body: file,

@@ -77,7 +77,7 @@ export const TwitchConfig = () => {
     const getBannerImageUrl = (bannerId: string) => {
         const banner = banners.find((b) => b.id === bannerId);
         if (!banner?.imageSrc) return undefined;
-        return `${env.VITE_BANNER_BUCKET_URI}/${banner.imageSrc}`;
+        return `${env.VITE_CONFIG_BUCKET_URI}/${banner.imageSrc}`;
     };
 
     const onAddMapping = () => {
