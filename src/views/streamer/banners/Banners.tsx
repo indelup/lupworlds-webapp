@@ -7,8 +7,7 @@ import { AppState, useStore } from "../../../hooks/useStore";
 import { BannerForm } from "./BannerForm/BannerForm";
 import { useBannerClient } from "../../../hooks/useBannerClient";
 import { Banner } from "@melda/lupworlds-types";
-import env from "../../../env";
-import { isBase64 } from "../../../utils/imageHelpers";
+import { getImageUrl } from "../../../utils/imageHelpers";
 
 type BannerItemProps = {
     banner: Banner;
@@ -18,11 +17,7 @@ type BannerItemProps = {
 
 const BannerItem = ({ banner, onEdit, onDelete }: BannerItemProps) => {
     const [loaded, setLoaded] = useState(false);
-    const imageSrc = !banner.imageSrc
-        ? ""
-        : isBase64(banner.imageSrc)
-          ? banner.imageSrc
-          : `${env.VITE_CONFIG_BUCKET_URI}/${banner.imageSrc}`;
+    const imageSrc = getImageUrl(banner.imageSrc) ?? "";
 
     return (
         <Flex gap={8} vertical>

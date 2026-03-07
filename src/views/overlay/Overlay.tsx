@@ -4,6 +4,7 @@ import type { Character, Material, World } from "@melda/lupworlds-types";
 import { AssetCard } from "../streamer/assets/AssetCard";
 import { characterToAsset, materialToAsset } from "../streamer/assets/assetMappers";
 import { useWorldClient } from "../../hooks/useWorldClient";
+import { getImageUrl } from "../../utils/imageHelpers";
 import classes from "./Overlay.module.scss";
 import env from "../../env";
 
@@ -14,24 +15,19 @@ interface PullEvent {
     item: Character | Material;
 }
 
-const getBucketUri = (_itemType: PullEvent["itemType"]) => env.VITE_ASSET_BUCKET_URI;
-
-const getBackSrc = (event: PullEvent, cardBacks?: World["cardBacks"]): string => {
-    const key = cardBacks?.[event.item.rarity];
-    if (!key) return "";
-    return `${env.VITE_CONFIG_BUCKET_URI}/${key}`;
-};
+const getBackSrc = (event: PullEvent, cardBacks?: World["cardBacks"]): string =>
+    getImageUrl(cardBacks?.[event.item.rarity]) ?? "";
 
 const getImageUrls = (event: PullEvent, cardBacks?: World["cardBacks"]): string[] => {
     const urls: string[] = [];
-    const backKey = cardBacks?.[event.item.rarity];
-    if (backKey) urls.push(`${env.VITE_CONFIG_BUCKET_URI}/${backKey}`);
-    const base = getBucketUri(event.itemType);
+    const backUrl = getImageUrl(cardBacks?.[event.item.rarity]);
+    if (backUrl) urls.push(backUrl);
     const mainSrc =
         event.itemType === "character"
             ? (event.item as Character).characterSrc
             : (event.item as Material).materialSrc;
-    if (mainSrc) urls.push(`${base}/${mainSrc}`);
+    const mainUrl = getImageUrl(mainSrc);
+    if (mainUrl) urls.push(mainUrl);
     return urls;
 };
 
@@ -131,9 +127,9 @@ export const Overlay = () => {
                             </div>
                             <div className={classes.flipFront}>
                                 {current.itemType === "character" ? (
-                                    <AssetCard item={characterToAsset(current.item as Character)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
+                                    <AssetCard item={characterToAsset(current.item as Character)} />
                                 ) : (
-                                    <AssetCard item={materialToAsset(current.item as Material)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
+                                    <AssetCard item={materialToAsset(current.item as Material)} />
                                 )}
                             </div>
                         </div>

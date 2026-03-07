@@ -6,19 +6,13 @@ import { UploadChangeParam } from "antd/es/upload";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { useWorldClient } from "../../../hooks/useWorldClient";
 import { uploadImage } from "../../../utils/lupworldsApi";
-import { getBase64, isBase64 } from "../../../utils/imageHelpers";
-import env from "../../../env";
+import { getBase64, getImageUrl } from "../../../utils/imageHelpers";
 import classes from "./WorldConfig.module.scss";
 
 const { Text } = Typography;
 
 const RARITIES = [1, 2, 3, 4, 5] as const;
 
-const toDisplayUrl = (src: string | undefined): string | undefined => {
-    if (!src) return undefined;
-    if (isBase64(src)) return src;
-    return `${env.VITE_CONFIG_BUCKET_URI}/${src}`;
-};
 
 export const WorldConfig = () => {
     const activeWorld = useStore((state: AppState) => state.activeWorld);
@@ -76,10 +70,10 @@ export const WorldConfig = () => {
             let backgroundSrc = draft.backgroundSrc;
 
             if (logoFile) {
-                logoSrc = await uploadImage(logoFile, "config", activeWorld.id);
+                logoSrc = await uploadImage(logoFile, "logos", activeWorld.id);
             }
             if (backgroundFile) {
-                backgroundSrc = await uploadImage(backgroundFile, "config", activeWorld.id);
+                backgroundSrc = await uploadImage(backgroundFile, "backgrounds", activeWorld.id);
             }
 
             // Merge existing cardBacks with any newly uploaded files
@@ -87,7 +81,7 @@ export const WorldConfig = () => {
             for (const rarity of RARITIES) {
                 const file = cardBackFiles[rarity - 1];
                 if (file) {
-                    cardBacks[rarity] = await uploadImage(file, "config", activeWorld.id);
+                    cardBacks[rarity] = await uploadImage(file, "cardbacks", activeWorld.id);
                 }
             }
 
@@ -125,11 +119,11 @@ export const WorldConfig = () => {
 
     const logoDisplayUrl = logoFile
         ? (logoFile.preview as string) || logoFile.url
-        : toDisplayUrl(world?.logoSrc);
+        : getImageUrl(world?.logoSrc);
 
     const backgroundDisplayUrl = backgroundFile
         ? (backgroundFile.preview as string) || backgroundFile.url
-        : toDisplayUrl(world?.backgroundSrc);
+        : getImageUrl(world?.backgroundSrc);
 
     return (
         <div className={classes.container}>
@@ -200,7 +194,7 @@ export const WorldConfig = () => {
                         const existingKey = draft.cardBacks?.[rarity];
                         const displayUrl = file
                             ? (file.preview as string) || file.url
-                            : toDisplayUrl(existingKey);
+                            : getImageUrl(existingKey);
                         return (
                             <div key={rarity} className={classes.cardBackField}>
                                 <span>

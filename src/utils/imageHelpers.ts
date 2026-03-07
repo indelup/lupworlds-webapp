@@ -1,3 +1,5 @@
+import env from "../env";
+
 export const getBase64 = (file: any): Promise<string> =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -9,4 +11,10 @@ export const getBase64 = (file: any): Promise<string> =>
 export const isBase64 = (str: string): boolean => {
     const base64Regex = /^data:image\/(png|jpeg|jpg|gif|webp);base64,/;
     return base64Regex.test(str);
+};
+
+export const getImageUrl = (key: string | undefined): string | undefined => {
+    if (!key) return undefined;
+    if (isBase64(key)) return key;
+    return `${env.VITE_IMAGE_FUNCTION_URL}images/${key}`;
 };

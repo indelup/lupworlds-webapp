@@ -11,7 +11,6 @@ import {
     actionToAsset,
     assetToAction,
 } from "./assetMappers";
-import env from "../../../env";
 
 export const useCharacterConfig = (): AssetConfig => {
     const activeWorld = useStore((state: AppState) => state.activeWorld);
@@ -21,7 +20,6 @@ export const useCharacterConfig = (): AssetConfig => {
     return {
         items: characters.map(characterToAsset),
         isFetching,
-        bucketUri: env.VITE_ASSET_BUCKET_URI,
         bucketType: "characters",
         create: async (item) => {
             const { id: _id, ...rest } = assetToCharacter({ ...item, id: "" });
@@ -49,7 +47,6 @@ export const useMaterialConfig = (): AssetConfig => {
     return {
         items: materials.map(materialToAsset),
         isFetching,
-        bucketUri: env.VITE_ASSET_BUCKET_URI,
         bucketType: "materials",
         create: async (item) => {
             const { id: _id, ...rest } = assetToMaterial({ ...item, id: "" });
@@ -77,7 +74,6 @@ export const useActionConfig = (): AssetConfig => {
     return {
         items: actions.map(actionToAsset),
         isFetching,
-        bucketUri: env.VITE_ASSET_BUCKET_URI,
         bucketType: "actions",
         create: async (item) => {
             const { id: _id, ...rest } = assetToAction({ ...item, id: "" });

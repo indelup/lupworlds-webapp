@@ -8,7 +8,7 @@ import { useWorldClient } from "../../../hooks/useWorldClient";
 import { useBannerClient } from "../../../hooks/useBannerClient";
 import { getChannelRedeems } from "../../../utils/twitchApi";
 import { getBotStatus, startBot, stopBot } from "../../../utils/botApi";
-import env from "../../../env";
+import { getImageUrl } from "../../../utils/imageHelpers";
 import classes from "./TwitchConfig.module.scss";
 
 const { Text } = Typography;
@@ -76,8 +76,7 @@ export const TwitchConfig = () => {
 
     const getBannerImageUrl = (bannerId: string) => {
         const banner = banners.find((b) => b.id === bannerId);
-        if (!banner?.imageSrc) return undefined;
-        return `${env.VITE_CONFIG_BUCKET_URI}/${banner.imageSrc}`;
+        return getImageUrl(banner?.imageSrc);
     };
 
     const onAddMapping = () => {

@@ -175,7 +175,7 @@ export const AssetForm = ({
                         align="center"
                         justify="center"
                     >
-                        <AssetCard item={previewItem} bucketUri={config.bucketUri} />
+                        <AssetCard item={previewItem} />
                     </Flex>
                     <Flex
                         className={classes.formColumn}

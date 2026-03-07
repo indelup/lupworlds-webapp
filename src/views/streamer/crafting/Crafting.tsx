@@ -3,7 +3,7 @@ import { DeleteFilled, EditFilled, ExperimentOutlined, PlusOutlined } from "@ant
 import { Recipe, World } from "@melda/lupworlds-types";
 import { useState } from "react";
 import { AppState, useStore } from "../../../hooks/useStore";
-import env from "../../../env";
+import { getImageUrl } from "../../../utils/imageHelpers";
 import { useWorldClient } from "../../../hooks/useWorldClient";
 import { useCharacterClient } from "../../../hooks/useCharacterClient";
 import { useActionClient } from "../../../hooks/useActionClient";
@@ -53,8 +53,7 @@ export const Crafting = () => {
 
     const resolveCurrencyLogoUrl = (currencyId: string): string | undefined => {
         const currency = (world?.currencies ?? []).find((c) => c.id === currencyId);
-        if (!currency?.image) return undefined;
-        return `${env.VITE_CONFIG_BUCKET_URI}/${currency.image}`;
+        return getImageUrl(currency?.image);
     };
 
     const resolveCurrencyName = (currencyId: string): string => {

@@ -42,7 +42,7 @@ export const AssetList = ({ config }: AssetListProps) => {
                 ) : (
                     config.items.map((item) => (
                         <Flex key={item.id} gap={8} vertical>
-                            <AssetCard item={item} bucketUri={config.bucketUri} />
+                            <AssetCard item={item} />
                             <Flex gap={4} justify="end" className="mt-4">
                                 <Button
                                     type="primary"

@@ -7,17 +7,11 @@ import { UploadFile } from "antd";
 import { AppState, useStore } from "../../../hooks/useStore";
 import { useWorldClient } from "../../../hooks/useWorldClient";
 import { getPresignedUrl } from "../../../utils/lupworldsApi";
-import { getBase64, isBase64 } from "../../../utils/imageHelpers";
-import env from "../../../env";
+import { getBase64, getImageUrl } from "../../../utils/imageHelpers";
 import classes from "./CurrencyConfig.module.scss";
 
 const { Text } = Typography;
 
-const toDisplayUrl = (image: string | undefined): string | undefined => {
-    if (!image) return undefined;
-    if (isBase64(image)) return image;
-    return `${env.VITE_CONFIG_BUCKET_URI}/${image}`;
-};
 
 export const CurrencyConfig = () => {
     const activeWorld = useStore((state: AppState) => state.activeWorld);
@@ -87,7 +81,7 @@ export const CurrencyConfig = () => {
                 currencies.map(async (c) => {
                     const file = files[c.id];
                     if (file) {
-                        const { url, key } = await getPresignedUrl(file.name, file.type || "image/png", "config", activeWorld.id);
+                        const { url, key } = await getPresignedUrl(file.name, file.type || "image/png", "currencies", activeWorld.id);
                         await fetch(url, {
                             method: "PUT",
                             body: file,
@@ -157,7 +151,7 @@ export const CurrencyConfig = () => {
                 ) : (
                     <div className={classes.currencyList}>
                         {currencies.map((c) => {
-                            const displayUrl = toDisplayUrl(c.image);
+                            const displayUrl = getImageUrl(c.image);
                             return (
                                 <div key={c.id} className={classes.currencyRow}>
                                     {displayUrl && (

@@ -2,25 +2,16 @@ import classes from "../../common/Card.module.scss";
 import Tilt from "react-parallax-tilt";
 import { Rate } from "antd";
 import { useEffect, useState } from "react";
-import { isBase64 } from "../../../utils/imageHelpers";
+import { getImageUrl } from "../../../utils/imageHelpers";
 import { AssetItem } from "./assetTypes";
 
 type AssetCardProps = {
     item: AssetItem;
-    bucketUri: string;
 };
 
-export const AssetCard = ({ item, bucketUri }: AssetCardProps) => {
-    const mainSrc = !item.mainSrc
-        ? ""
-        : isBase64(item.mainSrc)
-          ? item.mainSrc
-          : `${bucketUri}/${item.mainSrc}`;
-    const backgroundSrc = !item.backgroundSrc
-        ? ""
-        : isBase64(item.backgroundSrc)
-          ? item.backgroundSrc
-          : `${bucketUri}/${item.backgroundSrc}`;
+export const AssetCard = ({ item }: AssetCardProps) => {
+    const mainSrc = getImageUrl(item.mainSrc) ?? "";
+    const backgroundSrc = getImageUrl(item.backgroundSrc) ?? "";
 
     const [mainLoaded, setMainLoaded] = useState(!mainSrc);
     const [bgLoaded, setBgLoaded] = useState(!backgroundSrc);

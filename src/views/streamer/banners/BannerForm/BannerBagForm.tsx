@@ -4,7 +4,6 @@ import { BannerBag, Character, Material } from "@melda/lupworlds-types";
 import classes from "./BannerForm.module.scss";
 import { AssetCard } from "../../assets/AssetCard";
 import { characterToAsset, materialToAsset } from "../../assets/assetMappers";
-import env from "../../../../env";
 
 type BannerBagFormProps = {
     bag: BannerBag;
@@ -85,7 +84,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <AssetCard item={characterToAsset(character)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
+                                    <AssetCard item={characterToAsset(character)} />
                                     <Button
                                         size="large"
                                         variant="solid"
@@ -113,7 +112,7 @@ export const BannerBagForm = (props: BannerBagFormProps) => {
                         ) {
                             return (
                                 <div className={classes.bagItem}>
-                                    <AssetCard item={materialToAsset(material)} bucketUri={env.VITE_ASSET_BUCKET_URI} />
+                                    <AssetCard item={materialToAsset(material)} />
                                     <Button
                                         size="large"
                                         variant="solid"

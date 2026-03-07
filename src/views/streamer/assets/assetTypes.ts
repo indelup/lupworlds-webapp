@@ -13,7 +13,6 @@ export interface AssetItem {
 export interface AssetConfig {
     items: AssetItem[];
     isFetching: boolean;
-    bucketUri: string;
     bucketType: "characters" | "materials" | "actions";
     create: (item: Omit<AssetItem, "id">) => Promise<AssetItem>;
     update: (item: AssetItem) => Promise<AssetItem>;
